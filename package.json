@@ -1,0 +1,24 @@
+{
+  "name": "nycconstructionapp",
+  "version": "1.0.0",
+  "description": "NYC construction App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcartist/nycConstructionApp.git"
+  },
+  "author": "Paula Bannerman (dcartist)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dcartist/nycConstructionApp/issues"
+  },
+  "homepage": "https://github.com/dcartist/nycConstructionApp#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongo": "^0.1.0",
+    "mongoose": "^5.5.13"
+  }
+}
