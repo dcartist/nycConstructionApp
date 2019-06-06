@@ -1,40 +1,38 @@
-const mongoose = require('../connection')
+const mongoose = require('../db/connection')
 const Property = new mongoose.Schema({
     borough: {
         type: String,
+        default: String,
         trim: true
     },
     city: {
         type: String,
+        default: String,
         trim: true
     },
     street_name: {
         type: String,
+        default: String,
         trim: true
     },
     propNum: {
         type: String,
+        default: String,
         trim: true
     },
     propType: {
         type: String,
+        default: String,
         trim: true
     },
     jobDescr: {
         type: String,
+        default: String,
         trim: true
-    }
-
-
+    },
 })
 
 let property = mongoose.model('Property', Property)
-    //was checking into using virtual...
-    // Property.virtual('address.full').get(function() {
-    //     return this.name.first + ' ' + this.name.last;
-    // });
-
-
 module.exports = property
 
 /* "borough"
