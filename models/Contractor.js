@@ -12,8 +12,8 @@ const Contractor = new mongoose.Schema({
     },
     conLicense: {
         type: String,
-        default: String,
-        trim: true
+        default: 0
+            // trim: true
     },
 })
 
