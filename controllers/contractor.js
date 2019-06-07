@@ -8,7 +8,25 @@ router.get("/", (req, res) => {
     })
 })
 
+
 router.get("/name/:conLastName", (req, res) => {
-    Contractor.find({ conLastName: req.params.conLastName }.then(lastName => res.json(lastName)))
+    let theName = req.params.conLastName
+    Contractor.find({ conLastName: theName }).then(showName => res.json(showName))
 })
+
+router.post("/new", (req, res) => {
+    Contractor.create(req.body).then(contractor => res.json(contractor))
+})
+
+router.put("/update/:id", (req, res) => {
+    Contractor.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+        .then(update => res.json(update))
+})
+
+router.delete("/delete/:id", (req, res) => {
+    Contractor.findOneAndDelete({ _id: req.params.id }).then(deleted => res.json(deleted))
+})
+
+
+
 module.exports = router
