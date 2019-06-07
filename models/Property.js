@@ -32,16 +32,22 @@ const Property = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    // address: {
+    //     type: String,
+    //     default: String,
+    //     trim: true
+    // },
     address: {
-        type: String,
+        borough: String,
+        city: String,
         default: String,
-        trim: true
+        propNum: String
     },
-    contractorInfo: {
+    Contractor: {
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
     },
-    ownerInfo: {
+    Owner: {
         ref: "Owner",
         type: mongoose.Schema.Types.ObjectId
     },
