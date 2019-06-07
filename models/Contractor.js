@@ -1,4 +1,6 @@
 const mongoose = require('../db/connection')
+const Schema = mongoose.Schema;
+
 const Contractor = new mongoose.Schema({
     conFirstName: {
         type: String,
@@ -16,13 +18,13 @@ const Contractor = new mongoose.Schema({
         default: 0
             // trim: true
     },
-    Property: {
+    property: {
         ref: "Property",
-        type: mongoose.Schema.Types.ObjectId
+        type: Schema.Types.ObjectId
     },
-    Owner: {
+    owner: {
         ref: "Owner",
-        type: mongoose.Schema.Types.ObjectId
+        type: Schema.Types.ObjectId
     },
 })
 

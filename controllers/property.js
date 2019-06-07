@@ -5,7 +5,7 @@ const Contractor = require('../models/Contractor')
 const Owner = require('../models/Owner')
 
 router.get("/", (req, res) => {
-    Property.find().populate('Owner').then(property => {
+    Property.find().then(property => {
         res.json(property)
     })
 })

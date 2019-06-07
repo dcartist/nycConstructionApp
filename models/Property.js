@@ -1,4 +1,5 @@
 const mongoose = require('../db/connection')
+
 const Property = new mongoose.Schema({
     borough: {
         type: String,
@@ -37,11 +38,11 @@ const Property = new mongoose.Schema({
         default: String,
         trim: true
     },
-    Contractor: {
+    contractor: {
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
     },
-    Owner: {
+    owner: {
         ref: "Owner",
         type: mongoose.Schema.Types.ObjectId
     },

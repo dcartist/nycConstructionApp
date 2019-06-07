@@ -20,11 +20,11 @@ const Owner = new mongoose.Schema({
         default: String,
         trim: true
     },
-    Property: {
+    property: {
         ref: "Property",
         type: mongoose.Schema.Types.ObjectId
     },
-    Contractor: {
+    contractor: {
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
     },
