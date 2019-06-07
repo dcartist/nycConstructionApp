@@ -3,6 +3,7 @@ const Property = new mongoose.Schema({
     borough: {
         type: String,
         default: String,
+        uppercase: true,
         trim: true
     },
     city: {
@@ -28,7 +29,21 @@ const Property = new mongoose.Schema({
     jobDescr: {
         type: String,
         default: String,
+        lowercase: true,
         trim: true
+    },
+    address: {
+        type: String,
+        default: String,
+        trim: true
+    },
+    contractorInfo: {
+        ref: "Contractor",
+        type: mongoose.Schema.Types.ObjectId
+    },
+    ownerInfo: {
+        ref: "Owner",
+        type: mongoose.Schema.Types.ObjectId
     },
 })
 

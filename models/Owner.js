@@ -20,6 +20,14 @@ const Owner = new mongoose.Schema({
         default: String,
         trim: true
     },
+    propertyInfo: {
+        ref: "Property",
+        type: mongoose.Schema.Types.ObjectId
+    },
+    contractorInfo: {
+        ref: "Contractor",
+        type: mongoose.Schema.Types.ObjectId
+    },
 })
 
 let owner = mongoose.model('Owner', Owner)

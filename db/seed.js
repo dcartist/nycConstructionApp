@@ -52,18 +52,22 @@ function recordChecker(x) {
         }
     })
 }
-
-
-dbRun()
-
-// Property.deleteMany({})
 /* 
-Property.collection.insert(jobs)
-    .then(property => {
-        console.log(property)
-        process.exit()
-    })
-    .catch(err => {
-        console.log(err)
-        process.exit()
-    }) */
+function rundb() {
+    for (i = 0; i < 2; i++) {
+        dbRun()
+    }
+}
+rundb() */
+dbRun()
+    // Property.deleteMany({})
+    /* 
+    Property.collection.insert(jobs)
+        .then(property => {
+            console.log(property)
+            process.exit()
+        })
+        .catch(err => {
+            console.log(err)
+            process.exit()
+        }) */

@@ -8,12 +8,21 @@ const Contractor = new mongoose.Schema({
     conLastName: {
         type: String,
         default: String,
+        uppercase: true,
         trim: true
     },
     conLicense: {
         type: String,
         default: 0
             // trim: true
+    },
+    propertyInfo: {
+        ref: "Property",
+        type: mongoose.Schema.Types.ObjectId
+    },
+    ownerInfo: {
+        ref: "Owner",
+        type: mongoose.Schema.Types.ObjectId
     },
 })
 
