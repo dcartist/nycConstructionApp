@@ -32,16 +32,10 @@ const Property = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
-    // address: {
-    //     type: String,
-    //     default: String,
-    //     trim: true
-    // },
     address: {
-        borough: String,
-        city: String,
+        type: String,
         default: String,
-        propNum: String
+        trim: true
     },
     Contractor: {
         ref: "Contractor",
@@ -52,6 +46,7 @@ const Property = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId
     },
 })
+
 
 let property = mongoose.model('Property', Property)
 module.exports = property
