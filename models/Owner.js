@@ -30,6 +30,19 @@ const Owner = new mongoose.Schema({
     },
 })
 
+/* For reference: make a new seed type commands that will go through the collection(x) and find a relatable item in collection (y) and match them up and then save
+almost like findandUpdate
+
+Property.find({}).then(information => {
+    
+})
+
+It can't reference something that doesn't exists
+You can't find what doesn't exists but you can create it
+
+ */
+
+
 let owner = mongoose.model('Owner', Owner)
 module.exports = owner
     /* "ownType"

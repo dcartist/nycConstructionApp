@@ -18,69 +18,69 @@ const jobs = require('./jobsEdit')
 function dbRun() {
     //begin of function
     Property.deleteMany({}).then(
-            Contractor.deleteMany({}).then(
-                Owner.deleteMany({}).then(
-                    deleted => {
-                        console.log("deleted DB")
-                    }
-                )
+        Contractor.deleteMany({}).then(
+            Owner.deleteMany({}).then(
+                deleted => {
+                    console.log("deleted DB")
+                }
             )
-        ).then(
-            Property.insertMany(jobs).then(property => {
-                console.log(property)
-            }).then(Contractor.insertMany(jobs).then(contractor => {
-                // console.log(contractor)
-                console.log("Contractors done")
-            })).then(
-                Owner.insertMany(jobs).then(owner => {
+        )
+    ).then(
+        Property.insertMany(jobs).then(property => {
+            console.log(property)
+        }).then(Contractor.insertMany(jobs).then(contractor => {
+            // console.log(contractor)
+            console.log("Contractors done")
+        })).then(
+            Owner.insertMany(jobs).then(owner => { //same as fetch
+
+            }).catch(err => { console.log(err) })
+        )
+
+    )
+
+    /* 
+        Contractor.deleteMany({}).then(
+                // Contractor.create(jobs) 
+                Contractor.insertMany(jobs)
+                .then(contractor => {
+                    // console.log(contractor)
+                }).catch(err => { console.log(err) })) // End of Contractor
+        Owner.deleteMany({}).then(
+                // Contractor.create(jobs) 
+                Owner.insertMany(jobs)
+                .then(owner => {
                     // console.log(owner)
                     process.exit()
-                }).catch(err => { console.log(err) })
-            )
-
-        )
-        /* 
-            Contractor.deleteMany({}).then(
-                    // Contractor.create(jobs) 
-                    Contractor.insertMany(jobs)
-                    .then(contractor => {
-                        // console.log(contractor)
-                    }).catch(err => { console.log(err) })) // End of Contractor
-            Owner.deleteMany({}).then(
-                    // Contractor.create(jobs) 
-                    Owner.insertMany(jobs)
-                    .then(owner => {
-                        // console.log(owner)
-                        process.exit()
-                    }).catch(err => { console.log(err) })) // End of the Owner */
-        /* function dbRun() {
-            //begin of function
-            Property.deleteMany({}).then(
-                Property.insertMany(jobs).then(property => {
-                    console.log(property)
-                }).catch(err => {
-                    console.log(err)
-                        // process.exit()
-                })
-            ).then()
-            Contractor.deleteMany({}).then(
-                    // Contractor.create(jobs) 
-                    Contractor.insertMany(jobs)
-                    .then(contractor => {
-                        // console.log(contractor)
-                    }).catch(err => { console.log(err) })) // End of Contractor
-            Owner.deleteMany({}).then(
-                    // Contractor.create(jobs) 
-                    Owner.insertMany(jobs)
-                    .then(owner => {
-                        // console.log(owner)
-                        process.exit()
-                    }).catch(err => { console.log(err) })) // End of the Owner */
-        /* 
-            for (i = 0; i < collectionNames.length; i++) {
-                recordChecker(collectionNames[i])
-            }
-         */
+                }).catch(err => { console.log(err) })) // End of the Owner */
+    /* function dbRun() {
+        //begin of function
+        Property.deleteMany({}).then(
+            Property.insertMany(jobs).then(property => {
+                console.log(property)
+            }).catch(err => {
+                console.log(err)
+                    // process.exit()
+            })
+        ).then()
+        Contractor.deleteMany({}).then(
+                // Contractor.create(jobs) 
+                Contractor.insertMany(jobs)
+                .then(contractor => {
+                    // console.log(contractor)
+                }).catch(err => { console.log(err) })) // End of Contractor
+        Owner.deleteMany({}).then(
+                // Contractor.create(jobs) 
+                Owner.insertMany(jobs)
+                .then(owner => {
+                    // console.log(owner)
+                    process.exit()
+                }).catch(err => { console.log(err) })) // End of the Owner */
+    /* 
+        for (i = 0; i < collectionNames.length; i++) {
+            recordChecker(collectionNames[i])
+        }
+     */
 
     //end of function
 }
