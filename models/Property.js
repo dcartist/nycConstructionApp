@@ -38,14 +38,14 @@ const Property = new mongoose.Schema({
         default: String,
         trim: true
     },
-    contractor: {
+    contractor: [{
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
-    },
-    owner: {
+    }],
+    owner: [{
         ref: "Owner",
         type: mongoose.Schema.Types.ObjectId
-    },
+    }],
     jobId: Number,
 })
 

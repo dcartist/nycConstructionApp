@@ -18,14 +18,15 @@ const Contractor = new mongoose.Schema({
         default: 0
             // trim: true
     },
-    property: {
+    property: [{
         ref: "Property",
         type: Schema.Types.ObjectId
-    },
-    owner: {
+    }],
+    owner: [{
         ref: "Owner",
         type: Schema.Types.ObjectId
-    },
+    }],
+    jobId: Number,
 })
 
 let contractor = mongoose.model('Contractor', Contractor)

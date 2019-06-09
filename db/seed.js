@@ -3,18 +3,20 @@ const Contractor = require('../models/Contractor')
 const Owner = require('../models/Owner')
 const jobs = require('./jobsEdit')
 
+
 function createdb() {
-    Contractor.insertMany(jobs).then(owner => {
-        console.log(contractor);
+    Contractor.insertMany(jobs).then(cont => {
+        console.log('contractor');
 
         // });
     })
-    Property.insertMany(jobs).then(property => {
-            console.log(property)
+    Property.insertMany(jobs).then(prop => {
+            console.log('property')
         })
         .then(
-            Owner.insertMany(jobs).then(owner => {
-                console.log(owner);
+            Owner.insertMany(jobs).then(own => {
+                console.log('owner');
+
             })
         ).then( //End of the inserting
 

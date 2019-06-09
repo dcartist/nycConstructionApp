@@ -20,14 +20,15 @@ const Owner = new mongoose.Schema({
         default: String,
         trim: true
     },
-    property: {
+    properties: [{
         ref: "Property",
         type: mongoose.Schema.Types.ObjectId
-    },
-    contractor: {
+    }],
+    contractors: [{
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
-    },
+    }],
+    jobId: Number,
 })
 
 /* For reference: make a new seed type commands that will go through the collection(x) and find a relatable item in collection (y) and match them up and then save
