@@ -46,6 +46,7 @@ const Property = new mongoose.Schema({
         ref: "Owner",
         type: mongoose.Schema.Types.ObjectId
     },
+    jobId: Number,
 })
 
 
