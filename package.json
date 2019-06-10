@@ -4,14 +4,14 @@
     "description": "NYC construction App",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node index.js"
+        "start": "node index.js",
+
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/dcartist/nycConstructionApp.git"
     },
-    "author": "Paula Bannerman (dcartist)",
+    "author": "Paula Bannerman",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/dcartist/nycConstructionApp/issues"
