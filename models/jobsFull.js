@@ -1,7 +1,8 @@
 const mongoose = require('../db/connection')
 
 const JobsFull = new mongoose.Schema({
-    contractor_id: {
+    jobId: Number,
+    contractor: {
         ref: "Contractor",
         type: mongoose.Schema.Types.ObjectId
     },
@@ -13,18 +14,7 @@ const JobsFull = new mongoose.Schema({
         ref: "Property",
         type: mongoose.Schema.Types.ObjectId
     },
-
-    jobId: Number,
 })
-
 
 let jobsFull = mongoose.model('JobsFull', JobsFull)
 module.exports = jobsFull
-
-/* "borough"
-"address"
-"city"
-"zip"
-"propType"
- “jobDescr” 
- */

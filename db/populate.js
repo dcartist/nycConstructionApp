@@ -1,7 +1,7 @@
 const express = require("express");
 const Property = require('../models/Property')
 const Contractor = require('../models/Contractor')
-const JobsFull = require('../models/jobsFull')
+const JobsFull = require('../models/JobsFull')
 const Owner = require('../models/Owner')
 const jobs = require('./jobsEdit')
 
@@ -15,10 +15,6 @@ JobsFull.deleteMany({}).then(() => {
                             contractor: contractInfo[index],
                             property: propertyInfo[index],
                             jobId: index
-                                // owner_id: ownerInfo[index]._id,
-                                // contractor_id: contractInfo[index]._id,
-                                // property_id: propertyInfo[index]._id,
-                                // jobId: index
                         }).then(full => {
                             console.log(full)
                         }).catch(err => { console.log(err) })
@@ -30,6 +26,3 @@ JobsFull.deleteMany({}).then(() => {
 
     )
 })
-
-
-// console.log(own.tree)
