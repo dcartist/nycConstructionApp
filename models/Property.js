@@ -52,11 +52,3 @@ const Property = new mongoose.Schema({
 
 let property = mongoose.model('Property', Property)
 module.exports = property
-
-/* "borough"
-"address"
-"city"
-"zip"
-"propType"
- “jobDescr” 
- */

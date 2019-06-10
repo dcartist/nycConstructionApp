@@ -31,7 +31,3 @@ const Contractor = new mongoose.Schema({
 
 let contractor = mongoose.model('Contractor', Contractor)
 module.exports = contractor
-
-/* “conFirstName"
-"conLastName"
-"conLicense"  */
