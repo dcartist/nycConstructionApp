@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Property = require('../models/Property')
-const Contractor = require('../models/Contractor')
-const JobsFull = require('../models/JobsFull')
-const Owner = require('../models/Owner')
+const Property = require('../models/Property.js')
+const Contractor = require('../models/Contractor.js')
+const JobsFull = require('../models/JobsFull.js')
+const Owner = require('../models/Owner.js')
 
 router.get("/", (req, res) => {
     JobsFull.find()

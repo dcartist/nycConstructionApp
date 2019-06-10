@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Owner = require('../models/Owner')
+const Owner = require('../models/Owner.js')
 
 router.get("/", (req, res) => {
     Owner.find().then(owner => {
