@@ -9,10 +9,9 @@ const jobController = require('./controllers/job.js')
 app.use(parser.urlencoded({ extended: true }))
 app.use(parser.json())
 app.use(cors())
-
-// app.get("/", (req, res) => {
-//     res.send("Welcome")
-// })
+    // app.get("/", (req, res) => {
+    //     res.send("Welcome")
+    // })
 app.use('/api/contractor', conController)
 app.use("/api/owner", ownController)
 app.use("/api/property", propController)
