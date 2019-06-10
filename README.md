@@ -1,6 +1,5 @@
 # nycConstructionApp
 
-
 ## About this Repo
 DOB Job Application Filing
 
@@ -14,8 +13,10 @@ This dataset contains all job applications submitted through the Borough Offices
  * Cors
  * Body-Parser
 
-##Installation
-# for Localhost
+#Installation
+
+## for Localhost
+
 The following is the instructions in order:
 1. Fork and clone the repo.
 2. Use `npm init`
@@ -30,6 +31,7 @@ The following is the instructions in order:
 11. In your browser go to localhost.com:8080/
 
 #For Heroku App or Postman
+
 Main App:
 https://whispering-bayou-30290.herokuapp.com/api/
 
@@ -84,6 +86,7 @@ https://whispering-bayou-30290.herokuapp.com/api/contractor/delete/
 
 
 ## Job:
+
 lists and shows owner, contractor, properties by jobId
 https://whispering-bayou-30290.herokuapp.com/api/job/
 
@@ -92,7 +95,7 @@ Search for jobs by JobId:
 https://whispering-bayou-30290.herokuapp.com/api/job/id/
 
 
-##Property Owner
+##Property Owner:
 
 Shows all the property owners
 https://whispering-bayou-30290.herokuapp.com/api/owner
