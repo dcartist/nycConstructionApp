@@ -23,9 +23,9 @@ app.get('/', function(req, res) {
     // app.listen(app.get("port"), () => {
     //     console.log(`PORT: ${app.get("port")} works`)
     // })
-const port = process.env.PORT || 8000;
+    // const port = process.env.PORT || 8000;
 
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 4000);
 app.listen(port, () => {
     console.log("App is running on port " + port);
 });

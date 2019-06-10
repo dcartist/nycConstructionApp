@@ -14,7 +14,7 @@ Jobs.deleteMany({}).then(() => {
                             property: propertyInfo[index],
                             jobId: index
                         }).then(full => {
-                            console.log(full)
+                            // console.log(full)
                         }).catch(err => { console.log(err) })
                     }
                 })
