@@ -1,9 +1,7 @@
-const mongoose = require('./connection')
 const Property = require('../models/Property.js')
 const Contractor = require('../models/Contractor.js')
 const JobsFull = require('../models/JobsFull.js')
 const Owner = require('../models/Owner.js')
-const jobs = require('./jobsEdit.json')
 
 JobsFull.deleteMany({}).then(() => {
     Owner.find({}).then(ownerInfo => {

@@ -17,7 +17,7 @@ app.use("/api/owner", ownController)
 app.use("/api/property", propController)
 app.use("/api/job", jobController)
 app.get('/', function(req, res) {
-        res.redirect('/api/job')
+        res.redirect('/api/property')
     })
     // app.set("port", process.env.PORT || 8000);
     // app.listen(app.get("port"), () => {
