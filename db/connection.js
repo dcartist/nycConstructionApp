@@ -6,7 +6,6 @@ if (process.env.NODE_ENV === "production") {
 } else {
     mongoURI = "mongodb://localhost/nycjobapp";
 }
-
 mongoose
     .connect(mongoURI, { useNewUrlParser: true })
     .then(instance => console.log(`Connected to db: ${instance.connections[0].name}`)) //instance is what the database that your are connected to

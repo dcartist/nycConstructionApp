@@ -1,4 +1,4 @@
-const express = require("express");
+const mongoose = require('./connection')
 const Property = require('../models/Property.js')
 const Contractor = require('../models/Contractor.js')
 const JobsFull = require('../models/JobsFull.js')
