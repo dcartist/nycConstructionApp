@@ -1,14 +1,14 @@
 const Property = require('../models/Property.js')
 const Contractor = require('../models/Contractor.js')
-const Jobsfull = require('../models/Jobsfull.js')
+const Jobs = require('../models/Jobs.js')
 const Owner = require('../models/Owner.js')
 
-Jobsfull.deleteMany({}).then(() => {
+Jobs.deleteMany({}).then(() => {
     Owner.find({}).then(ownerInfo => {
             Contractor.find({}).then(contractInfo => {
                 Property.find({}).then(propertyInfo => {
                     for (let index = 0; index < ownerInfo.length; index++) {
-                        Jobsfull.create({
+                        Jobs.create({
                             owner: ownerInfo[index],
                             contractor: contractInfo[index],
                             property: propertyInfo[index],

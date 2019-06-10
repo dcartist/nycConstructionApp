@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Property = require('../models/Property.js')
 const Contractor = require('../models/Contractor.js')
-const JobsFull = require('../models/Jobsfull.js')
+const Jobs = require('../models/Jobs.js/index.js')
 const Owner = require('../models/Owner.js')
 
 router.get("/", (req, res) => {
-    JobsFull.find()
+    Jobs.find()
         .populate("property")
         .populate("owner")
         .populate("contractor")
@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 
 router.get("/id/:jobId", (req, res) => {
     let thejob = req.params.jobId
-    JobsFull.find({ jobId: thejob })
+    Jobs.find({ jobId: thejob })
         .populate("contractor")
         .populate("property")
         .populate("owner")

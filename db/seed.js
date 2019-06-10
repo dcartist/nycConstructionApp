@@ -1,20 +1,20 @@
 const Property = require('../models/Property.js')
 const Contractor = require('../models/Contractor.js')
 const Owner = require('../models/Owner.js')
-const jobs = require('./jobsEdit.json')
+const jobsedit = require('./jobsEdit.json')
 
 
 function createdb() {
-    Contractor.insertMany(jobs).then(cont => {
+    Contractor.insertMany(jobsedit).then(cont => {
         console.log('contractor');
 
         // });
     })
-    Property.insertMany(jobs).then(prop => {
+    Property.insertMany(jobsedit).then(prop => {
             console.log('property')
         })
         .then(
-            Owner.insertMany(jobs).then(own => {
+            Owner.insertMany(jobsedit).then(own => {
                 console.log('owner');
 
             })
