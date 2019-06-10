@@ -24,10 +24,13 @@ app.get('/', (req, res) => {
     // app.listen(app.get("port"), () => {
     //     console.log(`PORT: ${app.get("port")} works`)
     // })
-
+const port = process.env.PORT || 8000;
 
 app.set("port", process.env.PORT || 3000);
-
-app.listen(app.get("port"), () => {
-    console.log(`PORT: ${app.get("port")}`);
+app.listen(port, () => {
+    console.log("App is running on port " + port);
 });
+
+// app.listen(app.get("port"), () => {
+//     console.log(`PORT: ${app.get("port")}`);
+// });
