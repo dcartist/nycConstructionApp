@@ -13,8 +13,7 @@ This dataset contains all job applications submitted through the Borough Offices
  * Cors
  * Body-Parser
 
-#Installation
-
+# Installation
 ## for Localhost
 
 The following is the instructions in order:
@@ -35,7 +34,7 @@ The following is the instructions in order:
 Main App:
 https://whispering-bayou-30290.herokuapp.com/api/
 
-##Property:
+## Property:
 
 to show all the properties:
 https://whispering-bayou-30290.herokuapp.com/api/property/
@@ -65,8 +64,7 @@ https://whispering-bayou-30290.herokuapp.com/api/property/update/
 Property to delete a document use the _id:
 https://whispering-bayou-30290.herokuapp.com/api/property/delete/
 
-
-##Contractor:
+## Contractor:
 
 Shows all the contractors
 https://whispering-bayou-30290.herokuapp.com/api/contractor
@@ -94,8 +92,7 @@ Search for jobs by JobId:
 (insert a numerical value for the jobId)
 https://whispering-bayou-30290.herokuapp.com/api/job/id/
 
-
-##Property Owner:
+## Property Owner:
 
 Shows all the property owners
 https://whispering-bayou-30290.herokuapp.com/api/owner
