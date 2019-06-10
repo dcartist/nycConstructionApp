@@ -6,26 +6,34 @@ DOB Job Application Filing
 
 This dataset contains all job applications submitted through the Borough Offices, through eFiling, or through the HUB, which have a "Latest Action Date" since January 1, 2000.
 
-
-
 ## Technology Used
- * javescript
+ * javascript
  * ExpressJs
  * Heroku
  * Mongoose/Mongo DB
  * Cors
  * Body-Parser
- 
 
+##Installation
+# for Localhost
+The following is the instructions in order:
+1. Fork and clone the repo.
+2. Use `npm init`
+3. Use `npm install`
+4. On a separate terminal window run `mongod`
+5. In another terminal window run `mongo`
+6. Run `node db/seed.js`
+7. After running it in console, you  will see some messages. Once the messages stop press `Ctrl` + `C`
+8. Run `node db/populate.js`
+9. After 40 seconds use `Ctrl` + `C` to exit out of the file.
+10. Run `nodemon index.js` to activate the app
+11. In your browser go to localhost.com:8080/
 
-
-
-
-
+#For Heroku App or Postman
 Main App:
 https://whispering-bayou-30290.herokuapp.com/api/
 
-Property:
+##Property:
 
 to show all the properties:
 https://whispering-bayou-30290.herokuapp.com/api/property/
@@ -56,7 +64,7 @@ Property to delete a document use the _id:
 https://whispering-bayou-30290.herokuapp.com/api/property/delete/
 
 
-Contractor:
+##Contractor:
 
 Shows all the contractors
 https://whispering-bayou-30290.herokuapp.com/api/contractor
@@ -75,7 +83,7 @@ Contractor to delete a document use the _id
 https://whispering-bayou-30290.herokuapp.com/api/contractor/delete/
 
 
-Job:
+## Job:
 lists and shows owner, contractor, properties by jobId
 https://whispering-bayou-30290.herokuapp.com/api/job/
 
@@ -84,5 +92,20 @@ Search for jobs by JobId:
 https://whispering-bayou-30290.herokuapp.com/api/job/id/
 
 
-Contractor: 
+##Property Owner
 
+Shows all the property owners
+https://whispering-bayou-30290.herokuapp.com/api/owner
+
+Search by last name:
+(insert name at the end)
+https://whispering-bayou-30290.herokuapp.com/api/owner/name/
+
+Owner to insert a new document:
+https://whispering-bayou-30290.herokuapp.com/api/owner/new
+
+Owner to update a document use the _id
+https://whispering-bayou-30290.herokuapp.com/api/owner/update/
+
+Owner to delete a document use the _id
+https://whispering-bayou-30290.herokuapp.com/api/owner/delete/
