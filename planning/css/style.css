@@ -1,0 +1,21 @@
+body {
+    background-color: blue;
+    margin: auto;
+}
+
+section {
+    padding: 20px;
+    margin: 30px auto;
+    background-color: white;
+    width: 75%;
+}
+
+.imagecenter {
+    /* text-align: center; */
+    margin: auto;
+}
+
+section ul {
+    margin-left: 20px;
+    width: 500px;
+}

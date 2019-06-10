@@ -17,7 +17,6 @@ router.get("/type/:info", (req, res) => {
     Owner.find({ ownType: theName }).then(showName => res.json(showName))
 })
 
-
 router.post("/new", (req, res) => {
     Owner.create(req.body).then(owner => res.json(owner))
 })

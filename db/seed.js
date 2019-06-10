@@ -7,7 +7,6 @@ const jobsedit = require('./jobsEdit.json')
 function createdb() {
     Contractor.insertMany(jobsedit).then(cont => {
         console.log('contractor');
-
         // });
     })
     Property.insertMany(jobsedit).then(prop => {
@@ -16,7 +15,6 @@ function createdb() {
         .then(
             Owner.insertMany(jobsedit).then(own => {
                 console.log('owner');
-
             })
         ).then( //End of the inserting
 

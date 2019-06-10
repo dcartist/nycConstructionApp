@@ -20,6 +20,10 @@ router.get("/address/:address", (req, res) => {
     let theName = req.params.address
     Property.find({ address: theName }).then(showName => res.json(showName))
 })
+router.get("/streetnumber/:propNum", (req, res) => {
+    let theName = req.params.propNum
+    Property.find({ propNum: theName }).then(showName => res.json(showName))
+})
 
 router.post("/new", (req, res) => {
     Property.create(req.body).then(property => res.json(property))

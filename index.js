@@ -16,20 +16,15 @@ app.use('/api/contractor', conController)
 app.use("/api/owner", ownController)
 app.use("/api/property", propController)
 app.use("/api/job", jobController)
+
+app.get('/api', function(req, res) {
+    res.redirect('/api/property')
+})
 app.get('/', function(req, res) {
-        res.redirect('/api/property')
-    })
-    // app.set("port", process.env.PORT || 8000);
-    // app.listen(app.get("port"), () => {
-    //     console.log(`PORT: ${app.get("port")} works`)
-    // })
-    // const port = process.env.PORT || 8000;
+    res.redirect('/api/property')
+})
+app.set("port", process.env.PORT || 8080);
 
-app.set("port", process.env.PORT || 4000);
-app.listen(port, () => {
-    console.log("App is running on port " + port);
+app.listen(app.get("port"), () => {
+    console.log(`${app.get("port")} works`);
 });
-
-// app.listen(app.get("port"), () => {
-//     console.log(`PORT: ${app.get("port")}`);
-// });

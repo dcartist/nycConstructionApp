@@ -5,16 +5,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/style.css">
     <title>Planning</title>
 
 </head>
 
 <body>
-    <h3>First started</h3>
-    <p>I began with finding a dataset from New York <a href="https://dev.socrata.com/foundry/data.cityofnewyork.us/rvhx-8trz" target="_blank">DOB Job Application Filings
-    </a>. This dataset contains all job applications submitted through the Borough Offices, through eFiling, or through the HUB, which have a "Latest Action Date" since January 1, 2000. </p>
-    <img src="./image/job-applicant.jpg" alt="ERD of project">
-    <p> The first thing I had to do was look through the data to see what I could do with it. The naming of the fields were not fully consistent and there was many variety of fields some were repeats.</p>
+    <section>
+        <p>I began with finding a dataset from New York <a href="https://dev.socrata.com/foundry/data.cityofnewyork.us/rvhx-8trz" target="_blank">DOB Job Application Filings
+            </a>. This dataset contains all job applications submitted through the Borough Offices, through eFiling, or through the HUB, which have a "Latest Action Date" since January 1, 2000. </p>
+    </section>
+
+
+    <section>
+        <h3>First started</h3>
+        <p> The first thing I had to do was look through the data to see what I could do with it. The naming of the fields were not fully consistent and there was many variety of fields some were repeats. I came up with the conclusion of having 4 models.</p>
+        <ul>
+            <li>JobId: Encapsulates the other three models so you can search the jobID to find a job with all the information from owner, contractor, and property</li>
+            <li>Owner: The person or business who owns the property</li>
+            <li>Contractor: The contractor who applied for the permit.</li>
+            <li>Property: The property that is being requested to have work done on it.</li>
+        </ul>
+        <img class="imagecenter" src="./image/jobapplicant-01.png" alt="ERD of project" width="75%">
+    </section>
+
+    <section>
+
+        <h3> Structure phase</h3>
+        <p>
+            I worked on getting the main structure of the app completed. I installed the dependencies (mongoose, mongodb, express, body-parse, cors) I also ran npm init and npm install, along with bootstrap which later I decided to scrap the node version.
+        </p>
+    </section>
+
+    <Section>
+        <h3>Model & Seeding</h3>
+        <p>I began the process of modeling at first thinking I would just connect (owner, contractor, and property) together within their own models, but decided to add another model JobId that links all the models together based on their Job ID number</p>
+        <p>
+            I found this part to be easy and yet tricky to do, and I did spend the majority time struggling on it. Due to the fact, when it comes to schema there are some rules you can and can't do apparently. When trying to make a new item inside a document linking
+            two existing items already in the scheme, it will have a fit and is a no go. You can't have it nested as well.
+        </p>
+        <p>
+            For example in the data there was Propnum which is the address number and street name of the property, but there was no full address with both were combined. I tried different ways to add them together but it would not work. Also adding it as
+        </p>
+        <p>
+            address: {<br> propNum: String,<br> street_name: String,<br> }
+            <br> would not work. So I went outside of scheme and created a file named changing to go through the data and add a new field called address that combines propNum and streetname
+        </p>
+        <p> For seeding I found that having two functions one for deletion and one for creation (using insertMany) helped with seeding. It stopped the need to have to seed the same file twice for it to insert into the database.</p>
+        <p> For seeding the jobId collection, I created a new file that used the collections made from seed.js. I didn't want to risk having issues with one function not running correctly.</p>
+    </Section>
+
+    <Section>
+        <h3>Deploying</h3>
+        <p>I started on the deployment and going through the steps. The app works locally, I am unsure if my internet connection (it was spotty) might have affected the deployment. I am still working through it to see what could it be.</p>
+    </Section>
+
+
 </body>
 
 </html>
