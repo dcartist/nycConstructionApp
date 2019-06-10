@@ -1,7 +1,7 @@
-const Property = require('../models/Property')
-const Contractor = require('../models/Contractor')
-const Owner = require('../models/Owner')
-const jobs = require('./jobsEdit')
+const Property = require('../models/Property.js')
+const Contractor = require('../models/Contractor.js')
+const Owner = require('../models/Owner.js')
+const jobs = require('./jobsEdit.json')
 
 
 function createdb() {

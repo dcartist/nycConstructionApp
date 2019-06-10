@@ -1,9 +1,9 @@
 const express = require("express");
-const Property = require('../models/Property')
-const Contractor = require('../models/Contractor')
-const JobsFull = require('../models/JobsFull')
-const Owner = require('../models/Owner')
-const jobs = require('./jobsEdit')
+const Property = require('../models/Property.js')
+const Contractor = require('../models/Contractor.js')
+const JobsFull = require('../models/JobsFull.js')
+const Owner = require('../models/Owner.js')
+const jobs = require('./jobsEdit.json')
 
 JobsFull.deleteMany({}).then(() => {
     Owner.find({}).then(ownerInfo => {
