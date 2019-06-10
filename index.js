@@ -17,11 +17,13 @@ app.use('/api/contractor', conController)
 app.use("/api/owner", ownController)
 app.use("/api/property", propController)
 app.use("/api/job", jobController)
-
-// app.set("port", process.env.PORT || 8000);
-// app.listen(app.get("port"), () => {
-//     console.log(`PORT: ${app.get("port")} works`)
-// })
+app.get('/', (req, res) => {
+        res.redirect('/api/job')
+    })
+    // app.set("port", process.env.PORT || 8000);
+    // app.listen(app.get("port"), () => {
+    //     console.log(`PORT: ${app.get("port")} works`)
+    // })
 
 
 app.set("port", process.env.PORT || 8000);
