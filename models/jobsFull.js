@@ -1,6 +1,6 @@
 const mongoose = require('../db/connection')
 
-const JobsFull = new mongoose.Schema({
+const Jobsfull = new mongoose.Schema({
     jobId: Number,
     contractor: {
         ref: "Contractor",
@@ -16,5 +16,5 @@ const JobsFull = new mongoose.Schema({
     },
 })
 
-let jobsFull = mongoose.model('JobsFull', JobsFull)
-module.exports = jobsFull
+let jobsfull = mongoose.model('JobsFull', Jobsfull)
+module.exports = jobsfull
