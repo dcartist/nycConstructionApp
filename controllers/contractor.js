@@ -12,6 +12,10 @@ router.get("/name/:conLastName", (req, res) => {
     let theName = req.params.conLastName
     Contractor.find({ conLastName: theName }).then(showName => res.json(showName))
 })
+router.get("/id/:id", (req, res) => {
+    let theName = req.params.conLastName
+    Contractor.find({  _id: req.params.id }).then(showName => res.json(showName))
+})
 
 router.post("/new", (req, res) => {
     Contractor.create(req.body).then(contractor => res.json(contractor))
