@@ -13,7 +13,7 @@ app.use(cors())
     // app.get("/", (req, res) => {
     //     res.send("Welcome")
     // })
-app.use('/api/users', userController)
+app.use('/api/user', userController)
 app.use('/api/contractor', conController)
 app.use("/api/owner", ownController)
 app.use("/api/property", propController)
