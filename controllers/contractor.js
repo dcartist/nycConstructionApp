@@ -13,8 +13,10 @@ router.get("/name/:conLastName", (req, res) => {
     Contractor.find({ conLastName: theName }).then(showName => res.json(showName))
 })
 router.get("/id/:id", (req, res) => {
-    let theName = req.params.conLastName
     Contractor.find({  _id: req.params.id }).then(showName => res.json(showName))
+})
+router.get("/jobid/:jobId", (req, res) => {
+    Contractor.find({  jobId: req.params.jobId }).then(results => res.json(results))
 })
 router.get("/license/:conLicense", (req, res) => {
     let license = req.params.conLicense
