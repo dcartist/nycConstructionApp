@@ -16,6 +16,10 @@ router.get("/id/:id", (req, res) => {
     let theName = req.params.conLastName
     Contractor.find({  _id: req.params.id }).then(showName => res.json(showName))
 })
+router.get("/license/:conLicense", (req, res) => {
+    let license = req.params.conLicense
+    Contractor.find({  conLicense: license }).then(results => res.json(results))
+})
 
 router.post("/new", (req, res) => {
     Contractor.create(req.body).then(contractor => res.json(contractor))

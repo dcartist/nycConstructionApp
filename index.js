@@ -22,6 +22,7 @@ app.use("/api/job", jobController)
 app.get('/api', function(req, res) {
     res.redirect('/api/property')
 })
+
 app.get('/', function(req, res) {
     res.redirect('/api/property')
 })

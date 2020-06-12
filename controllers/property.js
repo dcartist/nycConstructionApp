@@ -25,6 +25,11 @@ router.get("/streetnumber/:propNum", (req, res) => {
     Property.find({ propNum: theName }).then(showName => res.json(showName))
 })
 
+router.get("/license/:conLicense", (req, res) => {
+    let license = req.params.conLicense
+    Property.find({  conLicense: license }).then(results => res.json(results))
+})
+
 router.post("/new", (req, res) => {
     Property.create(req.body).then(property => res.json(property))
 })
