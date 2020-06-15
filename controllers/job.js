@@ -51,7 +51,7 @@ router.get("/id/:jobId", (req, res) => {
 //     ).catch(err => res.send(err))
     
 
-})
+// })
 // router.get("/", (req, res) => {
 //     Jobs.find()
 //         .populate("property")
