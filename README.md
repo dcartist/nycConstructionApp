@@ -41,22 +41,6 @@ The following is the instructions in order:
 10. Run `nodemon index.js` to activate the app
 11. In your browser go to localhost.com:8080/
 
-
-
-### Get All Properties:
-
-------
-
-#### Request
-
-```
-GET /
-```
-
-#### Response
-
-
-
 # For Heroku App
 
 https://whispering-bayou-30290.herokuapp.com/api/
