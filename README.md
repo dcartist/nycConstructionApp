@@ -7,11 +7,11 @@ This API is from a dataset that contains all job applications submitted through 
 
 ## Technology Used
 
-|        |      |
-| ---------- | --------- |
-| javascript | ExpressJs |
+|                   |             |
+| ----------------- | ----------- |
+| javascript        | ExpressJs   |
 | Mongoose/Mongo DB | Body-Parser |
-| Heroku | Cors |
+| Heroku            | Cors        |
 
 ### Schemas Used
 
@@ -29,8 +29,7 @@ Property Owner
 
 The following is the instructions in order:
 1. Fork and clone the repo.
-2. Use `npm init`
-3. Use `npm install`
+2. Use `npm install`
 4. On a separate terminal window run `mongod`
 5. In another terminal window run `mongo`
 6. Run `node db/seed.js`
@@ -399,5 +398,3 @@ PUT https://whispering-bayou-30290.herokuapp.com/api/owner/update/<id>
 ```
 POST https://whispering-bayou-30290.herokuapp.com/api/owner/new
 ```
-
-
