@@ -15,13 +15,15 @@ This API is from a dataset that contains all job applications submitted through 
 
 ### Schemas Used
 
-Contractors
+- Contractors ( The contractor who submitted a job)
 
-Job
+- Job (The work that was done by the contractor)
 
-Property
+- Property (The location of where the work was done)
 
-Property Owner
+- Property Owner (The owner of the property)
+
+
 
 
 # Installation
@@ -67,17 +69,17 @@ https://whispering-bayou-30290.herokuapp.com/api/
 
 ```javascript
 {
-"conLicense": String,
-"_id": ObjectID,
-"borough": String,
-"propNum": String,,
-"street_name": String,
-"propType": String,
-"city": String,
-"jobDescr": String,
-"address": String,
-"jobId": Number,
-"__v": Number,
+	"conLicense": String,
+	"_id": ObjectID,
+	"borough": String,
+	"propNum": String,,
+	"street_name": String,
+	"propType": String,
+	"city": String,
+	"jobDescr": String,
+	"address": String,
+	"jobId": Number,
+	"__v": Number,
 }
 ```
 
@@ -171,12 +173,12 @@ POST https://whispering-bayou-30290.herokuapp.com/api/property/new
 
 ```javascript
 {
-"conLicense": String,
-"_id": String,
-"conFirstName": String,
-"conLastName": String,
-"jobId": Number,
-"__v": Number,
+	"conLicense": String,
+	"_id": String,
+	"conFirstName": String,
+	"conLastName": String,
+	"jobId": Number,
+	"__v": Number,
 }
 ```
 
@@ -327,13 +329,13 @@ GET https://whispering-bayou-30290.herokuapp.com/api/job/id/<id>
 
 ```javascript
 {
-"_id": String,
-"ownType": String,
-"ownFirstName": String,
-"ownLastName": String,
-"ownBusinessName": String,
-"jobId": Number,
-"__v": Number,
+	"_id": String,
+	"ownType": String,
+	"ownFirstName": String,
+	"ownLastName": String,
+	"ownBusinessName": String,
+	"jobId": Number,
+	"__v": Number,
 }
 ```
 
