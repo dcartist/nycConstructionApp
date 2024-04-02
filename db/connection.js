@@ -5,6 +5,8 @@ if (process.env.NODE_ENV === "production") {
     mongoURI = process.env.DB_URL;
 } else {
     mongoURI = "mongodb://localhost/nycjobapp";
+    // mongoURI = process.env.DB_URL;
+    // mongoURI = "mongodb://localhost/nycjobapp";
 }
 mongoose
     .connect(mongoURI, { useNewUrlParser: true })

@@ -2,6 +2,7 @@ const express = require('express')
 const parser = require('body-parser')
 const app = express()
 const cors = require('cors')
+require('dotenv').config();
 const conController = require('./controllers/contractor.js')
 const ownController = require('./controllers/owner.js')
 const propController = require('./controllers/property.js')
