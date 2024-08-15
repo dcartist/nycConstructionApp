@@ -7,6 +7,8 @@ const conController = require('./controllers/contractor.js')
 const ownController = require('./controllers/owner.js')
 const propController = require('./controllers/property.js')
 const jobController = require('./controllers/job.js')
+
+const v2Controller = require('./controllers/v2/index.js')
 const userController = require('./controllers/users.js')
 app.use(parser.urlencoded({ extended: true }))
 app.use(parser.json())
@@ -19,6 +21,8 @@ app.use('/api/contractor', conController)
 app.use("/api/owner", ownController)
 app.use("/api/property", propController)
 app.use("/api/job", jobController)
+app.use("/api/v2", v2Controller)
+
 
 app.get('/api', function(req, res) {
     res.redirect('/api/property')
