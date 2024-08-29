@@ -1,15 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require('../../db/connection')
 
-
-const propertySchema = new mongoose.Schema({
-    house_Num: {
+const propertySchemaV2 = new mongoose.Schema({
+    house_num: {
         type: String,
-        default: String,
         trim: true
     },
-    street_Name: {
+    street_name: {
         type: String,
-        default: String,
+        trim: true
+    },
+    landmarked: {
+        type: String,
+        trim: true
+    },
+    property_owner_firstName: {
+        type: String,
+        trim: true
+    },
+    property_owner_lastName: {
+        type: String,
+        trim: true
+    },
+    building_type: {
+        type: String,
+        trim: true
+    },
+    existing_occupancy: {
+        type: String,
+        trim: true
+    },
+    owner_type: {
+        type: String,
+        trim: true
+    },
+    property_owner_business_name: {
+        type: String,
+        trim: true
+    },
+    non_profit: {
+        type: String,
         trim: true
     },
     proptertyID: {
@@ -18,29 +47,21 @@ const propertySchema = new mongoose.Schema({
     },
     building_type: {
         type: String,
-        default: String,
+        trim: true
+    },
+    borough: {
+        type: String,
         trim: true
     },
     community___board: {
         type: Number,
         default: 0
     },
-    bourough: {
-        type: String,
-        default: String,
-        trim: true
-    },
-    Borough_id: {
-        type: Number,
-        default: 0
-    },
-    Borough_borough_id: {
-        type: Number,
-        default: 0
-    },
+
+
 });
 
-module.exports = mongoose.model('Property', propertySchema);
+module.exports = mongoose.model('PropertyV2', propertySchemaV2);
 
 
 

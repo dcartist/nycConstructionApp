@@ -1,7 +1,6 @@
+const mongoose = require('../../db/connection')
 
-const mongoose = require('mongoose');
-
-const applicationSchema = new mongoose.Schema({
+const applicationSchemaV2 = new mongoose.Schema({
     applicant_firstName: {
         type: String,
         default: String,
@@ -12,18 +11,24 @@ const applicationSchema = new mongoose.Schema({
         default: String,
         trim: true
     },
-    applicant_Title: {
+    applicant_title: {
         type: String,
         default: String,
         trim: true
     },
-    applicant_License: {
+    applicant_license: {
         type: String,
         default: String,
         trim: true
     },
-    });
+    job_listing:
+    {
+        type: [String],
+        default: [],
+    },
 
-module.exports = mongoose.model('Application', applicationSchema);
+    }, {timeseries: true});
+
+module.exports = mongoose.model('ApplicationV2', applicationSchemaV2);
 
  

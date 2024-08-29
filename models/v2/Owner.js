@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const ownerSchema = new mongoose.Schema({
+const ownerSchemaV2 = new mongoose.Schema({
   user_id: {
     type: Number,
     required: true
@@ -19,6 +19,6 @@ const ownerSchema = new mongoose.Schema({
   }
 });
 
-const Owner = mongoose.model('Owner', ownerSchema);
+const OwnerV2 = mongoose.model('OwnerV2', ownerSchemaV2);
 
-module.exports = Owner;
+module.exports = OwnerV2;

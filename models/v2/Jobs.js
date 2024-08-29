@@ -1,15 +1,24 @@
-const mongoose = require('mongoose');
+const mongoose = require('../../db/connection')
 
-const jobSchema = new mongoose.Schema({
-    JobStartDate: {
+const jobSchemaV2 = new mongoose.Schema({
+    job_number: {
+        type: String,
+        default: String,
+        trim: true
+    },
+    prefiling_date: {
         type: Date,
         default: Date.now
     },
-    jobEndDate: {
+    paid: {
         type: Date,
         default: Date.now
     },
-    jobEstEndDate: {
+    latest_action_date: {
+        type: Date,
+        default: Date.now
+    },
+    fully_permitted: {
         type: Date,
         default: Date.now
     },
@@ -29,20 +38,35 @@ const jobSchema = new mongoose.Schema({
         trim: true
     },
     propertyID: {
-        type: Number,
-        default: 0
+        type: String,
+        default: '',
+        trim: true
     },
     Application_id: {
-        type: Number,
-        default: 0
+        type: String,
+        default: String,
+        trim: true
+    },
+    contractors: 
+    {
+        type: [String],
+        default: [],
     },
     Property_proptertyID: {
-        type: Number,
-        default: 0
+        type: String,
+        default: '',
+        trim: true
     },
     approved_date: {
-        type: Date,
-        default: Date.now
+        type: mongoose.Schema.Types.Mixed,
+    required: false,
+    validate: {
+      validator: function(value) {
+        return typeof value === 'string' || value instanceof Date;
+      },
+      message: props => `${props.value} is not a valid type.`
+    }
+
     },
     approved: {
         type: Boolean,
@@ -56,11 +80,15 @@ const jobSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    professional_cert: {
+        type: String,
+        trim: true
+    },
     job_status_descrp: {
         type: String,
         default: String,
         trim: true
     },
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model('Job', jobSchema);
+module.exports = mongoose.model('JobV2', jobSchemaV2);
