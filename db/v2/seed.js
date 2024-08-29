@@ -35,7 +35,7 @@ const seedData = async () => {
         job_status: item.job_status,
         job_type: item.job_type,
        
-        other_Description: item.other_description,
+        other_description: item.other_description,
         propertyID: item.property_id,
         Application_id: item.job__,
         job_number: item.job__,
@@ -50,6 +50,7 @@ const seedData = async () => {
         ),
         job_status_descrp: item.job_status_descrp,
         city: item.city_,
+        job_description: item.job_description ? item.job_description : null,
         professional_cert: item.professional_cert,
         latest_action_date: isValidDate(item.latest_action_date)
           ? new Date(item.latest_action_date)
