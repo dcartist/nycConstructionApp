@@ -22,6 +22,10 @@ const jobSchemaV2 = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    job_description: {
+        type: String,
+        trim: true
+    },
     job_status: {
         type: String,
         default: String,
@@ -32,9 +36,8 @@ const jobSchemaV2 = new mongoose.Schema({
         default: String,
         trim: true
     },
-    other_Description: {
+    other_description: {
         type: String,
-        default: String,
         trim: true
     },
     propertyID: {
