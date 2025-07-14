@@ -125,16 +125,20 @@ const seedData = async () => {
 for (const application of jobData) {
         const app = {
             job_number: application.job__,
-            applicant_s_first_name: application.applicant_s_first_name,
-            applicant_s_last_name: application.applicant_s_last_name,
-            applicant_professional_title: application.applicant_professional_title,
-            applicant_license: application.applicant_license__,
+            applicant_firstName: application.applicant_s_first_name,
+            applicant_lastName: application.applicant_s_last_name,
+            applicant_title: application.applicant_professional_title,
+            applicant_license: application.applicant_license__ ? application.applicant_license__ : null,
           };
         
         const existingApp = await ApplicationV2.findOne({
           applicant_license: app.applicant_license,
         });
-        if (existingApp) {
+        if (app.applicant_license === null){
+            app.job_listing = [app.job_number];
+            await ApplicationV2.create(app) 
+        }
+        else if (existingApp) {
           existingApp.job_listing.push(app.job_number);
           await existingApp.save();
         } else {

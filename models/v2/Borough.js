@@ -1,6 +1,6 @@
 const mongoose = require('../db/connection')
 
-const bouroughSchema = new mongoose.Schema({
+const bouroughSchemaV2 = new mongoose.Schema({
   brough_Name: {
     type: String,
     default: String,
@@ -13,4 +13,4 @@ const bouroughSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('Bourough', bouroughSchema);
+module.exports = mongoose.model('BouroughV2', bouroughSchemaV2);
