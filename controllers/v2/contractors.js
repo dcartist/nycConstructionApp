@@ -12,6 +12,17 @@ router.get("/", (req, res) => {
     })
 })
 
+router.get("/page/:page", (req, res) => {
+    const perPage = 30
+    const page = req.params.page || 1
+    Contractor.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .then(contractor => {
+            res.json(contractor)
+        })
+})
+
 router.get("/id/:contractorID", async (req, res) => {
     if (!req.params.contractorID) {
         return res.status(400).json({ error: "Contractor ID is required" });
@@ -19,9 +30,9 @@ router.get("/id/:contractorID", async (req, res) => {
     try {
         const contractor = await Contractor.findById({ _id: req.params.contractorID });
         if (!contractor) {
-            return res.status(404).json({ error: "Contractor not found" });                 
+            return res.status(404).json({ error: "Contractor not found" });
         }
-        const jobs = await Jobs.find({ contractors: { $in: [req.params.contractorID] } });         
+        const jobs = await Jobs.find({ contractors: { $in: [req.params.contractorID] } });
         const contractorInfo = { ...contractor.toObject() };
 
         contractorInfo.jobs = jobs;
@@ -31,9 +42,9 @@ router.get("/id/:contractorID", async (req, res) => {
         console.error("Error fetching contractor:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-})  
+})
 
-    router.get("/license/number/:license_number", (req, res) => {
+router.get("/license/number/:license_number", (req, res) => {
     Contractor.find({ license_number: req.params.license_number }).then(contractors => {
         res.json(contractors)
     })
@@ -44,6 +55,7 @@ router.get("/license/status/:status", (req, res) => {
         res.json(contractors)
     })
 })
+
 
 router.put("/edit/:contractorID", async (req, res) => {
     try {
@@ -61,23 +73,23 @@ router.put("/edit/:contractorID", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 })
-
-//find all the license_status types that are in the database and return them as an array
+// the list of license status types
 router.get("/license/types", async (req, res) => {
-    res.json( [
-"ACTIVE",
-"CERTIFICATE",
-"DECEASED",
-"DENIED",
-"EXPIRED",
-"INACTIVE",
-"OBSOLETE",
-"ON HOLD",
-"RESTRICTED",
-"RETIRED",
-"REVIEW PENDING",
-"SURRENDERED"
-])
+    res.json([
+        "ACTIVE",
+        "CERTIFICATE",
+        "DECEASED",
+        "DENIED",
+        "EXPIRED",
+        "INACTIVE",
+        "OBSOLETE",
+        "ON HOLD",
+        "RESTRICTED",
+        "RETIRED",
+        "REVIEW PENDING",
+        "SURRENDERED"
+    ])
+    // the list of license status types via database
     // try {
     //     const statuses = await Contractor.distinct("license_status");
     //     console.log("License statuses:", statuses);
@@ -87,5 +99,18 @@ router.get("/license/types", async (req, res) => {
     //     res.status(500).json({ error: "Internal server error" });
     // }
 })
+
+//Adding Contractors into the database
+router.post("/add", async (req, res) => {
+    const newContractor = new Contractor(req.body);
+    try {
+        const savedContractor = await newContractor.save();
+        res.status(201).json(savedContractor);
+    } catch (error) {
+        console.error("Error adding contractor:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 module.exports = router

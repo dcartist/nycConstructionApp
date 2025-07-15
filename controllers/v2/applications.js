@@ -29,6 +29,7 @@ router.get("/license/:applicant_license", (req, res) => {
         res.json(jobs)
     })
 })
+
 router.get("/license/:applicant_license/full", (req, res) => {
     Application.find({applicant_license: req.params.applicant_license}).then(jobs => {
         res.json(jobs)
@@ -36,6 +37,16 @@ router.get("/license/:applicant_license/full", (req, res) => {
     })
 })
 
-
+//addding a new application
+router.post("/add", async (req, res) => {
+    const newApplication = new Application(req.body);
+    try {
+        const savedApplication = await newApplication.save();
+        res.status(201).json(savedApplication);
+    } catch (error) {
+        console.error("Error adding application:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 module.exports = router

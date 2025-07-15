@@ -50,7 +50,7 @@ const seedData = async () => {
         ),
         job_status_descrp: item.job_status_descrp,
         city: item.city_,
-        job_description: item.job_description ? item.job_description : null,
+        job_description: item.job_description ? item.job_description.replace(/\s{2,}/g, " ") : null,
         professional_cert: item.professional_cert,
         latest_action_date: isValidDate(item.latest_action_date)
           ? new Date(item.latest_action_date)

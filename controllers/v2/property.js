@@ -8,33 +8,43 @@ const Application = require('../../models/v2/Application.js')
 
 router.get("/", (req, res) => {
     Property.find().then(jobs => {
-              res.json(jobs)
-         })
-    }) 
+        res.json(jobs)
+    })
+})
+router.get("/page/:page", (req, res) => {
+    const perPage = 30
+    const page = req.params.page || 1
+    Property.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .then(properties => {
+            res.json(properties)
+        })
+})
 
 router.get("/id/:propertyID", async (req, res) => {
-        if (!req.params.propertyID) {
-            return res.status(400).json({ error: "Property ID is required" });
+    if (!req.params.propertyID) {
+        return res.status(400).json({ error: "Property ID is required" });
+    }
+    let propertyInfo = {}
+    try {
+        const property = await Property.findById({ _id: req.params.propertyID });
+        if (!property) {
+            return res.status(404).json({ error: "Property not found" });
         }
-        let propertyInfo = {}
-        try {
-            const property = await Property.findById({ _id: req.params.propertyID });
-            if (!property) {
-                return res.status(404).json({ error: "Property not found" });
-            }
-            const jobs = await Jobs.find({ propertyID: req.params.propertyID });
+        const jobs = await Jobs.find({ propertyID: req.params.propertyID });
 
-            propertyInfo = { ...property.toObject() };
-            
-            propertyInfo.jobs = jobs;
+        propertyInfo = { ...property.toObject() };
 
-            res.json(propertyInfo);
-        } catch (error) {
-            console.error("Error fetching property:", error);
-            res.status(500).json({ error: "Internal server error" });
-        }
-        
-    })  
+        propertyInfo.jobs = jobs;
+
+        res.json(propertyInfo);
+    } catch (error) {
+        console.error("Error fetching property:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+})
 
 router.get("/borough/:borough", (req, res) => {
     Property.find({ borough: req.params.borough }).then(jobs => {
@@ -76,6 +86,17 @@ router.put("/edit/:propertyID", async (req, res) => {
 //     })
 // })
 
+//adding a new property
+router.post("/add", async (req, res) => {
+    const newProperty = new Property(req.body);
+    try {
+        const savedProperty = await newProperty.save();
+        res.status(201).json(savedProperty);                
+    } catch (error) {
+        console.error("Error adding property:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
-    
+
 module.exports = router
