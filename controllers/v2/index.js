@@ -4,7 +4,7 @@ const jobsController = require("./jobs.js");
 const applicationsController = require("./applications.js");
 const propertyController = require("./property.js");
 const contractorsController = require("./contractors.js");
-const seedData = require("../../db/v2/seed.js");
+// const seedData = require("../../db/v2/seed.js");
 
 // router.post("/seed", async (req, res) => {
 //   try {
@@ -21,9 +21,9 @@ router.get("/", (req, res) => {
 
 
 
-// router.use("/jobs", jobsController);
-// router.use("/applications", applicationsController);
-// router.use("/properties", propertyController);
-// router.use("/contractors", contractorsController);
+router.use("/jobs", jobsController);
+router.use("/applications", applicationsController);
+router.use("/properties", propertyController);
+router.use("/contractors", contractorsController);
 
 module.exports = router
