@@ -121,7 +121,10 @@ const seedData = async () => {
       for (const field of requiredFields) {
         if (!(field in contractor)) {
           contractor[field] = null;
+        } else {
+          contractor[field] = contractor[field].toString().trim();
         }
+        
       }
       await ContractorV2.create(contractor);
     }
