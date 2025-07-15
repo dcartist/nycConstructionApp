@@ -57,6 +57,11 @@ const propertySchemaV2 = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    //   job_listing:
+    // {
+    //     type: [String],
+    //     default: [],
+    // },
 
 
 });

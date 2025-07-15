@@ -39,7 +39,7 @@ const seedData = async () => {
         propertyID: item.property_id,
         Application_id: item.job__,
         job_number: item.job__,
-        Property_proptertyID: item.property_property_id,
+        // Property_proptertyID: item.property_property_id,
         approved_date: isValidDate(item.approved)
           ? new Date(item.approved)
           : item.approved,
@@ -58,7 +58,7 @@ const seedData = async () => {
         zip: item.zip,
         existing_occupancy: item.existing_occupancy,
         building_type: item.building_type,
-        street_name: item.street_name,
+        street_name: item.street_name.replace(/\s{2,}/g, " "),
         house_num: item.house__,
         owner_type: item.owner_type,
         borough: item.borough,
@@ -70,8 +70,31 @@ const seedData = async () => {
         property_owner_lastName: item.owner_s_last_name,
       };
 
+
+
+
+    
+    //if property exists using  street_name, property_owner_firstName, property_owner_lastName, house_num , update it, otherwise create a new one
+      const existingProperty = await PropertyV2.findOne({
+        property_owner_firstName: item.owner_s_first_name,
+        property_owner_lastName: item.owner_s_last_name,
+        property_owner_business_name: item.owner_s_business_name ? item.owner_s_business_name : null,
+        street_name: item.street_name.replace(/\s{2,}/g, " "),
+        house_num: item.house__,
+      });
+      if (existingProperty) {
+        // existingProperty.job_listing.push(item.job__);
+        const newProperty = await existingProperty.save();
+        job.Property_proptertyID = newProperty._id;
+        job.propertyID = newProperty._id;
+      } else {
+        const newProperty = await PropertyV2.create(job);
+        job.Property_proptertyID = newProperty._id;
+        job.propertyID = newProperty._id;
+      }
+
+
       await JobV2.create(job);
-      await PropertyV2.create(job);
     }
 
 
@@ -107,6 +130,7 @@ const seedData = async () => {
     // Assigning contractors to jobs
     const allJobs = await JobV2.find();
     const allContractors = await ContractorV2.find();
+    const properties = await PropertyV2.find();
 
     for (const job of allJobs) {
       // Randomly pick between 0 to 2 contractors
