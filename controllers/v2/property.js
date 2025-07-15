@@ -54,6 +54,22 @@ router.get("/house/:house_num", (req, res) => {
     })
 })
 
+router.put("/edit/:propertyID", async (req, res) => {
+    try {
+        const updatedProperty = await Property.findByIdAndUpdate(
+            req.params.propertyID,
+            req.body,
+            { new: true }
+        );
+        if (!updatedProperty) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+        res.json(updatedProperty);
+    } catch (error) {
+        console.error("Error updating property:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 // router.get("/:job_number", (req, res) => {
 //     Jobs.find({job_number: req.params.job_number}).then(jobs => {
 //         res.json(jobs)
