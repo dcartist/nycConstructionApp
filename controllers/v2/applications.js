@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
     })
 })
 
-router.get("id/:id", (req, res) => {
+router.get("/id/:id", (req, res) => {
     Application.findById(req.params.id).then(job => {
         if (!job) {
             return res.status(404).json({ msg: "Job not found" });
