@@ -23,6 +23,49 @@ router.get("/id/:id", (req, res) => {
     });
 });
 
+router.get("/id/:applicationID/full", async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.applicationID);
+        if (!application) {
+            return res.status(404).json({ msg: "Application not found" });
+        }
+
+        const applicationInfo = { ...application.toObject() };
+
+        // Fetch job details for each job in job_listing
+        const jobapplications = await Promise.all(
+            application.job_listing.map(async (job) => {
+                console.log("Fetching job details for job number:", job);
+                const jobDetails = await Jobs.findOne({ job_number: job });
+                const propertyDetails = await Property.findById(jobDetails.propertyID);
+                console.log("Job Details:", jobDetails);
+                return {
+                    job_id: jobDetails._id,
+                    approved: jobDetails.approved,
+                    job_number: jobDetails ? jobDetails.job_number : null,
+                    job_description: jobDetails ? jobDetails.job_description : null,
+                    job_type: jobDetails ? jobDetails.job_type : null,
+                    job_status: jobDetails ? jobDetails.job_status : null,
+                    job_status_descrp: jobDetails ? jobDetails.job_status_descrp : null,
+                    property: propertyDetails ? {
+                        _id: propertyDetails._id,
+                        house_num: propertyDetails.house_num,
+                        street_name: propertyDetails.street_name,
+                        borough: propertyDetails.borough,
+                        zip: propertyDetails.zip
+                    } : null
+                };
+            })
+        );
+
+        applicationInfo.job_listing = jobapplications;
+
+        res.json(applicationInfo);
+    } catch (err) {
+        console.error("Error fetching application by ID:", err);
+        res.status(500).json({ msg: "Server error" });
+    }
+});
 
 // main router with pagination
 router.get("/page/:page", (req, res) => {
