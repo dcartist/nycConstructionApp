@@ -7,9 +7,22 @@ const Application = require('../../models/v2/Application.js')
 
 router.get("/", (req, res) => {
     Application.find().then(jobs => {
-              res.json(jobs)
-         })
+        res.json(jobs)
     })
+})
+
+router.get("id/:id", (req, res) => {
+    Application.findById(req.params.id).then(job => {
+        if (!job) {
+            return res.status(404).json({ msg: "Job not found" });
+        }
+        res.json(job);
+    }).catch(err => {
+        console.error("Error fetching job by ID:", err);
+        res.status(500).json({ msg: "Server error" });
+    });
+});
+
 
 // main router with pagination
 router.get("/page/:page", (req, res) => {
@@ -25,17 +38,17 @@ router.get("/page/:page", (req, res) => {
 
 // find by applicant_license
 router.get("/license/:applicant_license", (req, res) => {
-    Application.find({applicant_license: req.params.applicant_license}).then(jobs => {
+    Application.find({ applicant_license: req.params.applicant_license }).then(jobs => {
         res.json(jobs)
     })
 })
 
-router.get("/license/:applicant_license/full", (req, res) => {
-    Application.find({applicant_license: req.params.applicant_license}).then(jobs => {
-        res.json(jobs)
+// router.get("/license/:applicant_license/full", (req, res) => {
+//     Application.find({ applicant_license: req.params.applicant_license }).then(jobs => {
+//         res.json(jobs)
 
-    })
-})
+//     })
+// })
 
 //addding a new application
 router.post("/add", async (req, res) => {
