@@ -12,8 +12,9 @@ router.get("/", (req, res) => {
     })
 })
 router.get("/page/:page", (req, res) => {
+    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = 30
-    const page = req.params.page || 1
+    const page = pageNumber || 1
     Property.find({})
         .skip((perPage * page) - perPage)
         .limit(perPage)
