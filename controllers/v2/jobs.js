@@ -80,11 +80,36 @@ router.get("/number/:job_number", async (req, res) => {
     }
 })
 
-router.get("/id/:job_number", (req, res) => {
-    Jobs.find({ job_number: req.params.job_number }).then(jobs => {
-        res.json(jobs)
-    })
+router.get("/id/:id", async (req, res) => {
+    try {
+        let jobResults = {}
+        const jobdetails = await Jobs.findById(req.params.id);
+        const propertyInfo = await Property.findById(jobdetails.propertyID);
+        jobResults = { ...jobdetails.toObject() };
+        jobResults.contractors = await Contractor.find({ _id: { $in: jobdetails.contractors } });
+        jobResults.property = propertyInfo ? propertyInfo : null;
+        res.json(jobResults);
+        // let fullJobInfo = await { ...jobs };
+        // fullJobInfo.property = propertyInfo ? propertyInfo : null;
+
+        // res.json(fullJobInfo);
+    } catch (error) {
+        console.error("Error fetching job by ID:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 })
+
+router.get("/jobid/:job_number", async (req, res) => {
+    try {
+        const jobs = await Jobs.find({ job_number: req.params.job_number });
+        res.json(jobs);
+    } catch (error) {
+        console.error("Error fetching job by job number:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+        // const fullJobInfo = {}
+
 
 //adding a new job
 router.post("/add", async (req, res) => {
