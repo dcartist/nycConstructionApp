@@ -37,7 +37,8 @@ const seedData = async () => {
        
         other_description: item.other_description,
         propertyID: item.property_id,
-        Application_id: item.job__,
+        application_num: item.job__,
+        application_id: '',
         job_number: item.job__,
         // Property_proptertyID: item.property_property_id,
         approved_date: isValidDate(item.approved)
@@ -179,6 +180,15 @@ for (const application of jobData) {
     console.log("Data seeded successfully");
   } catch (error) {
     console.error("Error seeding data:", error);
+  }
+
+// go through all jobs and update the application_id field in the jobs model using the job_listing array in the application model
+  const applications = await ApplicationV2.find();
+  for (const application of applications) {
+    const jobNumbers = application.job_listing;
+    const jobs = await JobV2.find({ job_number: { $in: jobNumbers } });
+    const jobIds = jobs.map(job => job._id);
+    await JobV2.updateMany({ _id: { $in: jobIds } }, { $set: { application_id: application._id } });
   }
 
   // exit out of the process

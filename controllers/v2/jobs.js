@@ -3,6 +3,7 @@ const router = express.Router();
 const Property = require('../../models/v2/Property.js')
 const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
+const Application = require('../../models/v2/Application.js')
 
 
 
@@ -85,14 +86,14 @@ router.get("/id/:id", async (req, res) => {
         let jobResults = {}
         const jobdetails = await Jobs.findById(req.params.id);
         const propertyInfo = await Property.findById(jobdetails.propertyID);
+        const applicationInfo = await Application.findById(jobdetails.application_id);
         jobResults = { ...jobdetails.toObject() };
         jobResults.contractors = await Contractor.find({ _id: { $in: jobdetails.contractors } });
         jobResults.property = propertyInfo ? propertyInfo : null;
-        res.json(jobResults);
-        // let fullJobInfo = await { ...jobs };
-        // fullJobInfo.property = propertyInfo ? propertyInfo : null;
+        jobResults.application = applicationInfo ? applicationInfo : null;
 
-        // res.json(fullJobInfo);
+        res.json(jobResults);
+      
     } catch (error) {
         console.error("Error fetching job by ID:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -124,7 +125,16 @@ router.post("/add", async (req, res) => {
 });
 
 
-
+router.get("/all", async (req, res) => {
+    try {
+        const jobs = await Jobs.find()
+res.json(jobs);
+    }
+    catch (error) {
+        console.error("Error fetching all jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 router.get("/full", async (req, res) => {
     try {
