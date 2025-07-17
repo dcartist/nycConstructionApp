@@ -12,7 +12,15 @@ router.get("/", async (req, res) => {
         const jobsWithProperties = await Promise.all(
             jobs.map(async (job) => {
                 const property = await Property.findById(job.propertyID);
-                const jobObj = job.toObject();
+                // const jobObj = job.toObject();
+                const jobObj = {
+                    job_id: job._id,
+                    job_number: job.job_number,
+                    approved: job.approved,
+                    job_status_descrp: job.job_status_descrp,
+                    contractors: job.contractors.length,
+                    application_id: job.Application_id,
+                }
                 jobObj.property = property ? {
                     _id: property._id,
                     house_num: property.house_num,
@@ -54,7 +62,7 @@ router.get("/number/:job_number", async (req, res) => {
             return res.status(404).json({ error: "Job not found" });
         }
         const property = await Property.findById(job.propertyID);
-        const contractors = await Contractor.find({ _id: { $in: job.contractors } });           
+        const contractors = await Contractor.find({ _id: { $in: job.contractors } });
         const jobInfo = { ...job.toObject() };
         jobInfo.property = property ? {
             _id: property._id,
@@ -86,6 +94,33 @@ router.post("/add", async (req, res) => {
         res.status(201).json(savedJob);
     } catch (error) {
         console.error("Error adding job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
+
+router.get("/full", async (req, res) => {
+    try {
+        const jobs = await Jobs.find();
+        const jobsWithProperties = await Promise.all(
+            jobs.map(async (job) => {
+                const property = await Property.findById(job.propertyID);
+                const jobObj = job.toObject();
+                jobObj.property = property ? {
+                    _id: property._id,
+                    house_num: property.house_num,
+                    street_name: property.street_name,
+                    borough: property.borough,
+                    zip: property.zip
+                } : null;
+                return jobObj;
+            })
+        );
+        res.json(jobsWithProperties);
+    } catch (error) {
+        console.error("Error fetching jobs with properties:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
