@@ -6,11 +6,30 @@ const Jobs = require('../../models/v2/Jobs.js')
 
 
 
-router.get("/", (req, res) => {
-    Jobs.find().then(jobs => {
-        res.json(jobs)
-    })
-})
+router.get("/", async (req, res) => {
+    try {
+        const jobs = await Jobs.find();
+        const jobsWithProperties = await Promise.all(
+            jobs.map(async (job) => {
+                const property = await Property.findById(job.propertyID);
+                const jobObj = job.toObject();
+                jobObj.property = property ? {
+                    _id: property._id,
+                    house_num: property.house_num,
+                    street_name: property.street_name,
+                    borough: property.borough,
+                    zip: property.zip
+                } : null;
+                return jobObj;
+            })
+        );
+        res.json(jobsWithProperties);
+    } catch (error) {
+        console.error("Error fetching jobs with properties:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
@@ -37,7 +56,13 @@ router.get("/number/:job_number", async (req, res) => {
         const property = await Property.findById(job.propertyID);
         const contractors = await Contractor.find({ _id: { $in: job.contractors } });           
         const jobInfo = { ...job.toObject() };
-        jobInfo.property = property;
+        jobInfo.property = property ? {
+            _id: property._id,
+            house_num: property.house_num,
+            street_name: property.street_name,
+            borough: property.borough,
+            zip: property.zip
+        } : null;
         jobInfo.contractors = contractors;
 
         res.json(jobInfo);
@@ -53,7 +78,6 @@ router.get("/id/:job_number", (req, res) => {
     })
 })
 
-
 //adding a new job
 router.post("/add", async (req, res) => {
     const newJob = new Jobs(req.body);
@@ -65,7 +89,6 @@ router.post("/add", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 
 module.exports = router
