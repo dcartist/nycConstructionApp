@@ -1,19 +1,15 @@
 const mongoose = require('mongoose');
 
 const ownerSchemaV2 = new mongoose.Schema({
-  user_id: {
+  owner_id: {
     type: Number,
     required: true
   },
-  user_firstName: {
+firstName: {
     type: Number,
     required: true
   },
-  user_LastName: {
-    type: Number,
-    required: true
-  },
-  userRoleID: {
+  lastName: {
     type: Number,
     required: true
   }
