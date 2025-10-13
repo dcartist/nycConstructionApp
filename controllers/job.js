@@ -25,6 +25,13 @@ router.get("/id/:jobId", (req, res) => {
       .then(showinfo => res.json(showinfo))
 })
 
+router.get("/count", (req, res) => {
+  Jobs.countDocuments()
+      .then(count => res.json({ count }))
+      .catch(err => res.status(500).json({ error: 'An error occurred while counting jobs.' }));
+});
+
+
 // router.get("/", (req,res) => {
 //     res.send("Welcome")
 // })

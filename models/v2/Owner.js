@@ -1,24 +1,19 @@
 const mongoose = require('mongoose');
+require('./Property.js');
 
 const ownerSchemaV2 = new mongoose.Schema({
-  user_id: {
-    type: Number,
-    required: true
-  },
-  user_firstName: {
-    type: Number,
-    required: true
-  },
-  user_LastName: {
-    type: Number,
-    required: true
-  },
-  userRoleID: {
-    type: Number,
-    required: true
-  }
-});
 
-const OwnerV2 = mongoose.model('OwnerV2', ownerSchemaV2);
+  owner_id: { type: Number, unique: true, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  phone: { type: String },
+  businessName: { type: String },
+  propertyID: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PropertyV2',
+  }],
+}, { minimize: false });
 
-module.exports = OwnerV2;
+ownerSchemaV2.path('propertyID').default(() => []);
+
+module.exports = mongoose.model('OwnerV2', ownerSchemaV2);
