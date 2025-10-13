@@ -1,5 +1,6 @@
 const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
+const Metadata = require('../../models/v2/Metadata.js')
 const Application = require('../../models/v2/Application.js')
 const express = require("express");
 const router = express.Router();
@@ -13,8 +14,9 @@ router.get("/", (req, res) => {
 })
 
 router.get("/page/:page", (req, res) => {
+    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = 30
-    const page = req.params.page || 1
+    const page = pageNumber || 1
     Contractor.find({})
         .skip((perPage * page) - perPage)
         .limit(perPage)

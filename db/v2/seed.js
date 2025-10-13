@@ -3,6 +3,7 @@ const ApplicationV2 = require("../../models/v2/Application.js");
 const JobV2 = require("../../models/v2/Jobs.js");
 const PropertyV2 = require("../../models/v2/Property.js");
 const ContractorV2 = require("../../models/v2/Contractor.js");
+const OwnerV2 = require("../../models/v2/Owner.js");
 
 const isValidDate = (dateString) => {
   const date = new Date(dateString);
@@ -20,6 +21,11 @@ const seedData = async () => {
     await PropertyV2.deleteMany({});
     await ContractorV2.deleteMany({});
     await ApplicationV2.deleteMany({});
+    await OwnerV2.deleteMany({});
+    console.log("Cleared existing data");
+
+
+
 
 
     // Adding Jobs and Properties into the database
@@ -37,7 +43,8 @@ const seedData = async () => {
        
         other_description: item.other_description,
         propertyID: item.property_id,
-        Application_id: item.job__,
+        application_num: item.job__,
+        application_id: '',
         job_number: item.job__,
         // Property_proptertyID: item.property_property_id,
         approved_date: isValidDate(item.approved)
@@ -72,29 +79,66 @@ const seedData = async () => {
 
 
 
+      let owner = await OwnerV2.findOne({
+        firstName: item.owner_s_first_name,
+        lastName: item.owner_s_last_name,
+        businessName: item.owner_s_business_name ? item.owner_s_business_name : null,
+        phone: item.owner_sphone__ ? item.owner_sphone__ : null,
+      });
+      if (!owner) {
+        const lastOwner = await OwnerV2.findOne().sort({ owner_id: -1 });
+        const newOwnerId = lastOwner ? lastOwner.owner_id + 1 : 1000;
+        owner = new OwnerV2({
+          owner_id: newOwnerId,
+          firstName: item.owner_s_first_name,
+          lastName: item.owner_s_last_name,
+          businessName: item.owner_s_business_name ? item.owner_s_business_name : null,
+          phone: item.owner_sphone__ ? item.owner_sphone__ : null,
+        });
+        await owner.save();
+      }
+      job.ownerID = owner._id;
+   
 
     
     //if property exists using  street_name, property_owner_firstName, property_owner_lastName, house_num , update it, otherwise create a new one
-      const existingProperty = await PropertyV2.findOne({
-        property_owner_firstName: item.owner_s_first_name,
-        property_owner_lastName: item.owner_s_last_name,
-        property_owner_business_name: item.owner_s_business_name ? item.owner_s_business_name : null,
-        street_name: item.street_name.replace(/\s{2,}/g, " "),
-        house_num: item.house__,
-      });
-      if (existingProperty) {
-        // existingProperty.job_listing.push(item.job__);
-        const newProperty = await existingProperty.save();
-        job.Property_proptertyID = newProperty._id;
-        job.propertyID = newProperty._id;
-      } else {
-        const newProperty = await PropertyV2.create(job);
-        job.Property_proptertyID = newProperty._id;
-        job.propertyID = newProperty._id;
-      }
+    const propertyQuery = {
+      property_owner_firstName: item.owner_s_first_name,
+      property_owner_lastName: item.owner_s_last_name,
+      property_owner_business_name: item.owner_s_business_name ? item.owner_s_business_name : null,
+      street_name: item.street_name ? item.street_name.replace(/\s{2,}/g, " ") : null,
+      house_num: item.house__,
+    };
 
+    const propertyData = {
+      property_owner_firstName: item.owner_s_first_name,
+      property_owner_lastName: item.owner_s_last_name,
+      property_owner_business_name: item.owner_s_business_name ? item.owner_s_business_name : null,
+      street_name: item.street_name ? item.street_name.replace(/\s{2,}/g, " ") : null,
+      house_num: item.house__,
+      borough: item.borough,
+      zip: item.zip,
+      ownerID: owner._id, // ensure backlink
+    };
 
-      await JobV2.create(job);
+    let property = await PropertyV2.findOne(propertyQuery);
+
+    if (property) {
+      // Update fields on existing property
+      Object.assign(property, propertyData);
+      await property.save();
+    } else {
+      property = await PropertyV2.create(propertyData);
+    }
+
+    job.propertyID = property._id;
+
+    await OwnerV2.updateOne(
+      { _id: owner._id },
+      { $addToSet: { propertyID: property._id } }
+    );
+
+    await JobV2.create(job);
     }
 
 
@@ -121,7 +165,10 @@ const seedData = async () => {
       for (const field of requiredFields) {
         if (!(field in contractor)) {
           contractor[field] = null;
+        } else {
+          contractor[field] = contractor[field].toString().trim();
         }
+        
       }
       await ContractorV2.create(contractor);
     }
@@ -177,6 +224,49 @@ for (const application of jobData) {
   } catch (error) {
     console.error("Error seeding data:", error);
   }
+
+// go through all jobs and update the application_id field in the jobs model using the job_listing array in the application model
+  const applications = await ApplicationV2.find();
+  for (const application of applications) {
+    const jobNumbers = application.job_listing;
+    const jobs = await JobV2.find({ job_number: { $in: jobNumbers } });
+    const jobIds = jobs.map(job => job._id);
+    await JobV2.updateMany({ _id: { $in: jobIds } }, { $set: { application_id: application._id } });
+  }
+
+  // go through all properties and update the ownerID field in the property model using the owner model
+  const owners = await OwnerV2.find();
+  for (const owner of owners) {
+    const propertiesToUpdate = await PropertyV2.find({
+      $or: [
+        { ownerID: owner._id },
+        {
+          property_owner_firstName: owner.firstName,
+          property_owner_lastName: owner.lastName,
+          property_owner_business_name: owner.businessName ? owner.businessName : null
+        }
+      ]
+    }, { _id: 1, ownerID: 1 });
+
+    const propertyIds = propertiesToUpdate.map(p => p._id);
+
+    // Ensure properties point back to the owner
+    if (propertyIds.length) {
+      await PropertyV2.updateMany(
+        { _id: { $in: propertyIds } },
+        { $set: { ownerID: owner._id } }
+      );
+
+      // Ensure owner has all property ids in propertyID array (no duplicates)
+      await OwnerV2.updateOne(
+        { _id: owner._id },
+        { $addToSet: { propertyID: { $each: propertyIds } } }
+      );
+    }
+  }   
+
+
+
 
   // exit out of the process
   process.exit();

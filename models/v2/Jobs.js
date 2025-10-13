@@ -45,7 +45,12 @@ const jobSchemaV2 = new mongoose.Schema({
         default: '',
         trim: true
     },
-    Application_id: {
+    application_num: {
+        type: String,
+        default: String,
+        trim: true
+    },
+    application_id: {
         type: String,
         default: String,
         trim: true
