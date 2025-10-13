@@ -5,6 +5,7 @@ const applicationsController = require("./applications.js");
 const propertyController = require("./property.js");
 const contractorsController = require("./contractors.js");
 const Metadata = require("../../models/v2/Metadata.js");
+const ownerController = require("./owners.js");
 // const seedData = require("../../db/v2/seed.js");
 
 // router.post("/seed", async (req, res) => {
@@ -51,6 +52,7 @@ router.get("/meta", async (req, res) => {
 
 });
 
+router.use("/owners", ownerController);
 router.use("/jobs", jobsController);
 router.use("/applications", applicationsController);
 router.use("/properties", propertyController);

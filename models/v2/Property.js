@@ -1,4 +1,5 @@
-const mongoose = require('../../db/connection')
+const mongoose = require('../../db/connection');
+require('./Owner.js'); 
 
 const propertySchemaV2 = new mongoose.Schema({
     house_num: {
@@ -57,12 +58,12 @@ const propertySchemaV2 = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    //   job_listing:
-    // {
-    //     type: [String],
-    //     default: [],
-    // },
-
+    ownerID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OwnerV2', 
+        index: true
+    },
+ 
 
 });
 
