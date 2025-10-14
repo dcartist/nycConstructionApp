@@ -52,6 +52,18 @@ router.get("/page/:page", (req, res) => {
         })
 })
 
+router.get("/page/:page/:limit", (req, res) => {
+    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
+    const perPage = !req.params.limit || isNaN(req.params.limit) ? 30 : parseInt(req.params.limit)
+    const page = pageNumber || 1
+    Jobs.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .then(jobs => {
+            res.json(jobs)
+        })
+})
+
 //
 router.get("/number/:job_number", async (req, res) => {
     if (!req.params.job_number) {
