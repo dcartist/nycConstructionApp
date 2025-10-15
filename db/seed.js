@@ -37,7 +37,7 @@ contractor.forEach((con, index) => {
 
     if (con && prop && own) {
         const newJob = new Jobs({
-            jobId: index + 1,
+            jobId: index,
             contractor: con._id,
             property: prop._id,
             owner: own._id
