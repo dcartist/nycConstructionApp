@@ -24,6 +24,14 @@ router.get("/id/:jobId", (req, res) => {
       .populate("owner")
       .then(showinfo => res.json(showinfo))
 })
+router.get("/id/:id", (req, res) => {
+  let thejob = req.params.jobId
+  Jobs.find({ jobId: thejob })
+      .populate("contractor")
+      .populate("property")
+      .populate("owner")
+      .then(showinfo => res.json(showinfo))
+})
 
 router.get("/count", (req, res) => {
   Jobs.countDocuments()
