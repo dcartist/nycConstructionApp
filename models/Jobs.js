@@ -16,5 +16,5 @@ const Jobs = new mongoose.Schema({
     },
 })
 
-let jobs = mongoose.model('JobsFull', Jobs)
+let jobs = mongoose.model('Jobs', Jobs)
 module.exports = jobs
