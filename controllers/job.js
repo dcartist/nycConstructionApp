@@ -9,24 +9,24 @@ router.get("/", (req, res) => {
   console.log("Fetching all jobs with populated fields");
 
 // res.send("Fetching all jobs with populated fields");
-// Jobs.find().then(async (jobs) => {
-//   res.json(jobs);
-// }).catch(err => {
-//   console.error("Error fetching jobs:", err);
-//   res.status(500).json({ error: "An error occurred while fetching jobs." });
-// });
-  Jobs.find()
-      .populate("property")
-      .populate("owner")
-      .populate("contractor")
-      .then(jobs => {
-          console.log(`Found ${jobs.length} jobs`);
-          res.json(jobs);
-      })
-      .catch(err => {
-          console.error("Error fetching jobs:", err);
-          res.status(500).json({ error: "An error occurred while fetching jobs." });
-      }); 
+Jobs.find().then(async (jobs) => {
+  res.json(jobs);
+}).catch(err => {
+  console.error("Error fetching jobs:", err);
+  res.status(500).json({ error: "An error occurred while fetching jobs." });
+});
+  // Jobs.find()
+  //     .populate("property")
+  //     .populate("owner")
+  //     .populate("contractor")
+  //     .then(jobs => {
+  //         console.log(`Found ${jobs.length} jobs`);
+  //         res.json(jobs);
+  //     })
+  //     .catch(err => {
+  //         console.error("Error fetching jobs:", err);
+  //         res.status(500).json({ error: "An error occurred while fetching jobs." });
+  //     }); 
 
 })
 
@@ -42,14 +42,27 @@ router.get("/all", (req, res) => {
       }); 
 })
 
-router.get("/id/:jobId", (req, res) => {
-  let thejob = req.params.jobId
-  Jobs.find({ jobId: thejob })
-      .populate("contractor")
-      .populate("property")
-      .populate("owner")
-      .then(showinfo => res.json(showinfo))
-})
+// router.get("/id/:jobId", (req, res) => {
+//   let thejob = req.params.jobId
+//   console.log(`Fetching job with jobId: ${thejob}`);
+//   let resultObj
+//   Contractor.find({  jobId: req.params.jobId }).then( results => {
+//        insertObj(results)
+//     })
+//     Owner.find({  jobId: req.params.jobId }).then( results => {
+//       return insertObj(results)
+//     })
+//     Property.find({  jobId: req.params.jobId }).then( results => {
+//       insertObj(results)
+//     }).then(
+//         res.json(resultObj)
+//     ).catch(err => res.send(err))
+//   // Jobs.find({ jobId: thejob })
+//   //     .populate("contractor")
+//   //     .populate("property")
+//   //     .populate("owner")
+//   //     .then(showinfo => res.json(showinfo))
+// })
 // router.get("/id/:id", (req, res) => {
 //   let thejob = req.params.id
 //   console.log(`Fetching job with ID: ${thejob}`);
@@ -91,46 +104,38 @@ router.get("/count", (req, res) => {
   
 
 
-router.get("/:jobId", (req, res) => {
- let thejob = req.params.jobId
-  Jobs.find({ jobId: thejob })
-      .populate("contractor")
-      .populate("property")
-      .populate("owner")
-      .then(showinfo => res.json(showinfo))
-    // Contractor.find({  jobId: req.params.jobId }).then( results => {
-    //    insertObj(results)
-    // })
-    // Owner.find({  jobId: req.params.jobId }).then( results => {
-    //   return insertObj(results)
-    // })
-    // Property.find({  jobId: req.params.jobId }).then( results => {
-    //   insertObj(results)
-    // }).then(
-    //     res.json(resultObj)
-    // ).catch(err => res.send(err))
-    
+// router.get("/id/:id", async (req, res) => {
+//   try {
+//     const job = await Jobs.findById(req.params.id)
+//       .populate("property")
+//       .populate("owner")
+//       .populate("contractor");
 
-})
-// router.get("/", (req, res) => {
-//     Jobs.find()
-//         .populate("property")
-//         .populate("owner")
-//         .populate("contractor")
-//         .then(jobs => {
-//             res.json(jobs)
-//         })
-// })
+//     if (!job) return res.status(404).json({ error: "Job not found" });
+//     res.json(job);
+//   } catch (err) {
+//     console.error("Error fetching job by _id:", err);
+//     res.status(500).json({ error: "An error occurred while fetching the job." });
+//   }
+// });
 
 
-// router.get("/id/:jobId", (req, res) => {
-//     let thejob = req.params.jobId
-//     Jobs.find({ jobId: thejob })
-//         .populate("contractor")
-//         .populate("property")
-//         .populate("owner")
-//         .then(showinfo => res.json(showinfo))
-// })
+router.get("/id/:jobId", async (req, res) => {
+  try {
+    const results = {};
+    results.contractor = await Contractor.findOne({ jobId: req.params.jobId });
+    results.property   = await Property.findOne({ jobId: req.params.jobId });
+    results.owner      = await Owner.findOne({ jobId: req.params.jobId });
+
+    if (!results.contractor && !results.property && !results.owner) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+    return res.json([results]); // ensure only one response
+  } catch (err) {
+    console.error("Error fetching job by jobId:", err);
+    return res.status(500).json({ error: "An error occurred while fetching the job." });
+  }
+});
 
 
 module.exports = router

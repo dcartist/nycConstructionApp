@@ -32,12 +32,12 @@ function createdb() {
 
 contractor.forEach((con, index) => {
     console.log(con)
-    const prop = property[index];
-    const own = owner[index];
+    const prop = property.find(p => p.jobId === con.jobId);
+    const own = owner.find(o => o.jobId === con.jobId);
 
     if (con && prop && own) {
         const newJob = new Jobs({
-            jobId: index,
+            jobId: con.jobId,
             contractor: con._id,
             property: prop._id,
             owner: own._id
@@ -45,7 +45,7 @@ contractor.forEach((con, index) => {
         console.log(newJob);
         newJob.save()
             .then(savedJob => {
-                console.log(`Saved job ${savedJob.jobId}`);
+                console.log(`Saved job!! ${savedJob.jobId}`);
                 console.log(savedJob)
                 // console.log(`Contractor: ${con._id}, Property: ${prop._id}, Owner: ${own._id}`);
             })
