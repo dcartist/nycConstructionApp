@@ -194,6 +194,11 @@ router.post("/add", async (req, res) => {
             return res.status(400).json({ error: "Job number is required" });
         }
 
+        // Helper function to check if a string is a valid ObjectId
+        const isValidObjectId = (id) => {
+            return id && typeof id === 'string' && /^[a-fA-F0-9]{24}$/.test(id);
+        };
+
         // Check if job already exists
         const existingJob = await Jobs.findOne({ job_number });
         if (existingJob) {
@@ -202,9 +207,12 @@ router.post("/add", async (req, res) => {
 
         // Validate propertyID if provided
         if (propertyID) {
+            if (!isValidObjectId(propertyID)) {
+                return res.status(400).json({ error: "Invalid property ID format" });
+            }
             const property = await Property.findById(propertyID);
             if (!property) {
-                return res.status(400).json({ error: "Invalid property ID" });
+                return res.status(400).json({ error: "Property ID not found" });
             }
         }
 

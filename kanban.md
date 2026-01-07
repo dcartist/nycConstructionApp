@@ -7,16 +7,16 @@
     Have a section that searches via bourough
     ```
 
-### Add Testing Automation
+### Route: Create Applicant
 
   - defaultExpanded: false
-  - steps:
-      - [ ] Find best Framework
-      - [ ] Implement best testing framework
+    ```md
+    Check to see if applicant is already in
+    ```
 
 ## ToDo
 
-### Search application by ID or Partial Name
+### Routes: Search application by ID or Partial Name
 
   - defaultExpanded: false
   - steps:
@@ -36,7 +36,25 @@
     Make a route that searches by partial contractor name, ID or bourough (option)
     ```
 
+### Route: Add New Property
+
+  - defaultExpanded: false
+    ```md
+    Route: Add New Property
+    ```
+
+### Route: Create New Contractor
+
+  - defaultExpanded: false
+
 ## In Progress
+
+### Add Testing Automation
+
+  - defaultExpanded: false
+  - steps:
+      - [ ] Find best Framework
+      - [ ] Implement best testing framework
 
 ## Testing
 
