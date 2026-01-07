@@ -7,6 +7,13 @@
     Have a section that searches via bourough
     ```
 
+### Add Testing Automation
+
+  - defaultExpanded: false
+  - steps:
+      - [ ] Find best Framework
+      - [ ] Implement best testing framework
+
 ## ToDo
 
 ### Search application by ID or Partial Name
