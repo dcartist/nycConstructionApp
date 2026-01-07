@@ -25,6 +25,28 @@ router.get("/page/:page", (req, res) => {
         })
 })
 
+router.get("/search/:searchTerm/page/:page", (req, res) => {
+    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
+    const perPage = 30
+    const page = pageNumber || 1
+    let searchTerm = req.params.searchTerm
+    const searchRegex = new RegExp(searchTerm, 'i');
+
+    Contractor.find({
+        $or: [
+            { first_name: searchRegex }, 
+            { last_name: searchRegex },
+            { license_number: searchRegex },
+            { company_name: searchRegex }
+        ]
+    })
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .then(contractors => {
+            res.json(contractors)
+        })
+})
+
 router.get("/id/:contractorID", async (req, res) => {
     if (!req.params.contractorID) {
         return res.status(400).json({ error: "Contractor ID is required" });

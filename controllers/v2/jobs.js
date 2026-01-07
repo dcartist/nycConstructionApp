@@ -5,7 +5,19 @@ const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
 const Application = require('../../models/v2/Application.js')
 
-
+const jobTypeCode = [
+  { "job_type": "A1", "label": "Alteration Type 1" },
+  { "job_type": "A2", "label": "Alteration Type 2" },
+  { "job_type": "A3", "label": "Alteration Type 3" },
+  { "job_type": "DM", "label": "Full Demolition" },
+  { "job_type": "NB", "label": "New Building" },
+  { "job_type": "PA", "label": "Place of Assembly" },
+  { "job_type": "PR", "label": "LAA (ARA)" },
+  { "job_type": "SC", "label": "Subdivision - Condo" },
+  { "job_type": "SG", "label": "Sign" },
+  { "job_type": "SI", "label": "Subdivision - Improved" },
+  { "job_type": "SU", "label": "Subdivision - Unimproved" }
+]
 const jobsStatusMap = [
   { "job_status": "A", "job_status_short": "Pre-Filed", "job_status_descrp": "PRE-FILING" },
   { "job_status": "B", "job_status_short": "A/P Unpaid", "job_status_descrp": "APPLICATION PROCESSED-PART-NO PAYMENT" },
@@ -27,6 +39,8 @@ const jobsStatusMap = [
   { "job_status": "X", "job_status_short": "Signed-Off", "job_status_descrp": "SIGNED OFF" },
   { "job_status": "3", "job_status_short": "Suspended", "job_status_descrp": "SUSPENDED" }
 ]
+
+// GET: All Jobs with Property details
 router.get("/", async (req, res) => {
     try {
         const jobs = await Jobs.find();
@@ -60,6 +74,7 @@ router.get("/", async (req, res) => {
 });
 
 
+// GET: Paginated Jobs
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = 30
@@ -72,6 +87,8 @@ router.get("/page/:page", (req, res) => {
         })
 })
 
+
+// GET: Paginated Jobs with custom limit
 router.get("/page/:page/:limit", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = !req.params.limit || isNaN(req.params.limit) ? 30 : parseInt(req.params.limit)
@@ -84,10 +101,18 @@ router.get("/page/:page/:limit", (req, res) => {
         })
 })
 
+
+// GET: Job STATUS MAP
 router.get("/statusmap", (req, res) => {
     res.json(jobsStatusMap)
 })
-//
+// GET: Job TYPE CODE
+router.get("/types", (req, res) => {
+    res.json(jobTypeCode)
+})
+
+
+// GET: Job by JOB NUMBER with Property and Contractors details
 router.get("/number/:job_number", async (req, res) => {
     if (!req.params.job_number) {
         return res.status(400).json({ error: "Job number is required" });
@@ -116,6 +141,7 @@ router.get("/number/:job_number", async (req, res) => {
     }
 })
 
+// GET: Job by ID with Property, Application, and Contractors details
 router.get("/id/:id", async (req, res) => {
     try {
         let jobResults = {}
@@ -151,6 +177,7 @@ router.get("/id/:id", async (req, res) => {
     }
 })
 
+// GET: Jobs by JOB NUMBER
 router.get("/jobid/:job_number", async (req, res) => {
     try {
         const jobs = await Jobs.find({ job_number: req.params.job_number });
@@ -163,7 +190,7 @@ router.get("/jobid/:job_number", async (req, res) => {
         // const fullJobInfo = {}
 
 
-//adding a new job
+// Post: Add New Job
 router.post("/add", async (req, res) => {
     try {
         const {
@@ -269,7 +296,7 @@ router.post("/add", async (req, res) => {
     }
 });
 
-
+// GET: all jobs
 router.get("/all", async (req, res) => {
     try {
         const jobs = await Jobs.find()
@@ -305,5 +332,23 @@ router.get("/full", async (req, res) => {
     }
 });
 
+
+router.get("/newjobnumber", async (req, res) => {
+   
+    // go through job_number and then return a new job_number 
+    try {
+        const lastJob = await Jobs.findOne().sort({ job_number: -1 });
+        let newJobNumber = 1;
+        if (lastJob && lastJob.job_number) {
+            newJobNumber = parseInt(lastJob.job_number) + 1;
+        }
+        console.log("New Job Number Generated:", newJobNumber.toString().padStart(6, '0'));
+        console.log(newJobNumber);
+        res.json({ newJobNumber: newJobNumber.toString().padStart(6, '0') });
+    } catch (error) {
+        console.error("Error generating new job number:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }   
+});
 
 module.exports = router

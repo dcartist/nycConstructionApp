@@ -16,16 +16,6 @@
 
 ## ToDo
 
-### Routes: Search application by ID or Partial Name
-
-  - defaultExpanded: false
-  - steps:
-      - [ ] Search by Application ID (Partial)
-      - [ ] Search by First or Last Name Partial
-    ```md
-    Make an application route that searches by ID/Partial name
-    ```
-
 ### Search by Contractor
 
   - defaultExpanded: false
@@ -55,6 +45,23 @@
   - steps:
       - [ ] Find best Framework
       - [ ] Implement best testing framework
+
+### Route: Create a new job Number
+
+  - defaultExpanded: false
+    ```md
+    Create new job number
+    ```
+
+### Routes: Search application by ID or Partial Name
+
+  - defaultExpanded: false
+  - steps:
+      - [ ] Search by Application ID (Partial)
+      - [ ] Search by First or Last Name Partial
+    ```md
+    Make an application route that searches by ID/Partial name
+    ```
 
 ## Testing
 
