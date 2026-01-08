@@ -11,13 +11,19 @@ router.get("/", (req, res) => {
         res.json(jobs)
     })
 })
-router.get("/page/:page", (req, res) => {
-    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
-    const perPage = 30
-    const page = pageNumber || 1
-    Property.find({})
-        .skip((perPage * page) - perPage)
-        .limit(perPage)
+
+router.get("/search/:searchTerm/", (req, res) => {
+    let searchTerm = req.params.searchTerm
+    const searchRegex = new RegExp(searchTerm, 'i');
+
+    Property.find({
+        $or: [
+            { street_name: searchRegex }, 
+            { borough: searchRegex },
+            { house_num: searchRegex },
+            { zip_code: searchRegex }
+        ]
+    })
         .then(properties => {
             res.json(properties)
         })
