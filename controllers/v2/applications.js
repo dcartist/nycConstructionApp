@@ -131,15 +131,23 @@ router.post("/add", async (req, res) => {
 });
 
 router.get("/newNumber", async (req, res) => {
+
+    // go through applicant and then return a new applicant_license
+// go through all the numbers and get the highest then add 1
     try {
         const lastApplication = await Application.findOne().sort({ applicant_license: -1 });
-        const newNumber = lastApplication ? lastApplication.applicant_license + 1 : 1;
-        console.log({ new_application_number: newNumber });
-        res.json({ new_application_number: newNumber });
+        let newLicenseNumber = 100000;
+        if (lastApplication && lastApplication.applicant_license) {
+            newLicenseNumber = parseInt(lastApplication.applicant_license) + 1;
+        }
+        console.log({ new_application_number: newLicenseNumber.toString() })
+        res.json({ new_application_number: newLicenseNumber.toString() });
     } catch (error) {
-        console.error("Error generating new application number:", error);
+        console.error("Error generating new applicant license number:", error);
         res.status(500).json({ error: "Internal server error" });
-    }       
+    }   
+
+
 });
 
 module.exports = router
