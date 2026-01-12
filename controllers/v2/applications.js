@@ -5,10 +5,34 @@ const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
 const Application = require('../../models/v2/Application.js')
 
+const applicationTitle =[
+  {
+    "applicant_professional_title": "RA",
+    "description": "Registered Architect"
+  },
+  {
+    "applicant_professional_title": "PE",
+    "description": "Professional Engineer"
+  },
+  {
+    "applicant_professional_title": "RLA",
+    "description": "Registered Landscape Architect"
+  },
+  {
+    "applicant_professional_title": null,
+    "description": "Not provided / blank in source record"
+  }
+]
+
+
 router.get("/", (req, res) => {
     Application.find().then(jobs => {
         res.json(jobs)
     })
+})
+
+router.get("/titles", (req, res) => {
+    res.json(applicationTitle)
 })
 
 router.get("/id/:id", (req, res) => {
