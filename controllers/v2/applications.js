@@ -132,8 +132,6 @@ router.post("/add", async (req, res) => {
 
 router.get("/newNumber", async (req, res) => {
 
-    // go through applicant and then return a new applicant_license
-// go through all the numbers and get the highest then add 1
     try {
         const lastApplication = await Application.findOne().sort({ applicant_license: -1 });
         let newLicenseNumber = 100000;
