@@ -83,7 +83,7 @@ router.get("/id/:applicationID/full", async (req, res) => {
         );
 
         applicationInfo.job_listing = jobapplications;
-
+console.log("Application Info:", applicationInfo);
         res.json(applicationInfo);
     } catch (err) {
         console.error("Error fetching application by ID:", err);
@@ -132,18 +132,35 @@ router.post("/add", async (req, res) => {
 
 router.get("/newNumber", async (req, res) => {
 
+    // generate a new applicant license number by scanning
+    // existing licenses, finding the highest numeric value,
+    // and incrementing it.
+
     try {
-        const lastApplication = await Application.findOne().sort({ applicant_license: -1 });
-        let newLicenseNumber = 100000;
-        if (lastApplication && lastApplication.applicant_license) {
-            newLicenseNumber = parseInt(lastApplication.applicant_license) + 1;
+        const applications = await Application.find({ applicant_license: { $ne: null } }).select("applicant_license");
+
+        let maxLicenseNum = 100000; // starting baseline
+
+        for (const app of applications) {
+            if (!app.applicant_license) continue;
+
+            // Extract numeric portion (handles possible prefixes)
+            const numericPart = app.applicant_license.toString().match(/\d+/);
+            if (!numericPart) continue;
+
+            const num = parseInt(numericPart[0], 10);
+            if (!isNaN(num) && num > maxLicenseNum) {
+                maxLicenseNum = num;
+            }
         }
-        console.log({ new_application_number: newLicenseNumber.toString() })
+
+        const newLicenseNumber = maxLicenseNum + 1;
+        console.log({ new_application_number: newLicenseNumber.toString() });
         res.json({ new_application_number: newLicenseNumber.toString() });
     } catch (error) {
         console.error("Error generating new applicant license number:", error);
         res.status(500).json({ error: "Internal server error" });
-    }   
+    }
 
 
 });

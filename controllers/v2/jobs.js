@@ -133,7 +133,7 @@ router.get("/number/:job_number", async (req, res) => {
             zip: property.zip
         } : null;
         jobInfo.contractors = contractors;
-
+console.log("Job Info:", jobInfo);
         res.json(jobInfo);
     } catch (error) {
         console.error("Error fetching job:", error);
@@ -168,7 +168,7 @@ router.get("/id/:id", async (req, res) => {
             : [];
         jobResults.property = propertyInfo ? propertyInfo : null;
         jobResults.application = applicationInfo ? applicationInfo : null;
-
+console.log("Job Results:", jobResults);
         res.json(jobResults);
       
     } catch (error) {
@@ -192,6 +192,7 @@ router.get("/jobid/:job_number", async (req, res) => {
 
 // Post: Add New Job
 router.post("/add", async (req, res) => {
+    console.log(req.body);
     try {
         const {
             job_number,
@@ -216,23 +217,19 @@ router.post("/add", async (req, res) => {
             job_status_descrp
         } = req.body;
 
-        // Validate required fields
         if (!job_number) {
             return res.status(400).json({ error: "Job number is required" });
         }
 
-        // Helper function to check if a string is a valid ObjectId
         const isValidObjectId = (id) => {
             return id && typeof id === 'string' && /^[a-fA-F0-9]{24}$/.test(id);
         };
 
-        // Check if job already exists
         const existingJob = await Jobs.findOne({ job_number });
         if (existingJob) {
             return res.status(409).json({ error: "Job with this job number already exists" });
         }
 
-        // Validate propertyID if provided
         if (propertyID) {
             if (!isValidObjectId(propertyID)) {
                 return res.status(400).json({ error: "Invalid property ID format" });
@@ -243,7 +240,6 @@ router.post("/add", async (req, res) => {
             }
         }
 
-        // Validate application_id if provided
         if (application_id) {
             const application = await Application.findById(application_id);
             if (!application) {
@@ -251,7 +247,6 @@ router.post("/add", async (req, res) => {
             }
         }
 
-        // Validate contractors if provided
         if (contractors && contractors.length > 0) {
             const validContractors = await Contractor.find({ _id: { $in: contractors } });
             if (validContractors.length !== contractors.length) {
@@ -335,7 +330,7 @@ router.get("/full", async (req, res) => {
 
 router.get("/newjobnumber", async (req, res) => {
    
-    // go through job_number and then return a new job_number 
+    // go through job_number and then return a create new job_number 
     try {
         const lastJob = await Jobs.findOne().sort({ job_number: -1 });
         let newJobNumber = 1;
