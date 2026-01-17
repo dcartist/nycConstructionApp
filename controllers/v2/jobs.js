@@ -207,6 +207,10 @@ router.post("/add", async (req, res) => {
             propertyID,
             application_num,
             application_id,
+            applicant_firstName,
+            applicant_lastName,
+            applicant_title,
+            applicant_license,
             contractors,
             Property_proptertyID,
             approved_date,
@@ -240,10 +244,33 @@ router.post("/add", async (req, res) => {
             }
         }
 
+        // Determine or create related application ("applicant")
+        let applicationDoc = null;
+
         if (application_id) {
-            const application = await Application.findById(application_id);
-            if (!application) {
+            if (!isValidObjectId(application_id)) {
+                return res.status(400).json({ error: "Invalid application ID format" });
+            }
+
+            applicationDoc = await Application.findById(application_id);
+            if (!applicationDoc) {
                 return res.status(400).json({ error: "Invalid application ID" });
+            }
+        } else if (applicant_license) {
+            // Find or create an application by license (similar to db/v2/seed.js)
+            applicationDoc = await Application.findOne({ applicant_license });
+
+            if (!applicationDoc) {
+                const appData = {
+                    applicant_firstName: applicant_firstName || null,
+                    applicant_lastName: applicant_lastName || null,
+                    applicant_title: applicant_title || null,
+                    applicant_license,
+                    job_listing: [],
+                };
+
+                applicationDoc = new Application(appData);
+                await applicationDoc.save();
             }
         }
 
@@ -266,7 +293,7 @@ router.post("/add", async (req, res) => {
             other_description,
             propertyID,
             application_num,
-            application_id,
+            application_id: applicationDoc ? applicationDoc._id : application_id,
             contractors: contractors || [],
             Property_proptertyID,
             approved_date,
@@ -278,6 +305,15 @@ router.post("/add", async (req, res) => {
         });
 
         const savedJob = await newJob.save();
+
+        // If we have an associated application, update its job_listing
+        if (applicationDoc) {
+            const jobNum = savedJob.job_number;
+            if (jobNum && !applicationDoc.job_listing.includes(jobNum)) {
+                applicationDoc.job_listing.push(jobNum);
+                await applicationDoc.save();
+            }
+        }
         res.status(201).json({
             message: "Job created successfully",
             job: savedJob
