@@ -166,7 +166,7 @@ router.get("/id/:id", async (req, res) => {
         jobResults.contractors = jobdetails.contractors && jobdetails.contractors.length > 0
             ? await Contractor.find({ _id: { $in: jobdetails.contractors.filter(isValidObjectId) } })
             : [];
-        jobResults.property = propertyInfo ? propertyInfo : null;
+        jobResults.property = propertyInfo ? propertyInfo.toObject() : null;
         jobResults.application = applicationInfo ? applicationInfo : null;
 console.log("Job Results:", jobResults);
         res.json(jobResults);
