@@ -188,6 +188,28 @@ router.get("/jobid/:job_number", async (req, res) => {
     }
 });
         // const fullJobInfo = {}
+// PUT edit Job by ID
+router.put("/edit/:id", async (req, res) => {
+    try {
+        const jobId = req.params.id;
+        const updateData = req.body;
+
+        const updatedJob = await Jobs.findByIdAndUpdate(jobId, updateData, { new: true });
+
+        if (!updatedJob) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+
+        res.json({
+            message: "Job updated successfully",
+            job: updatedJob
+        });
+    } catch (error) {
+        console.error("Error updating job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 
 // Post: Add New Job
