@@ -40,6 +40,49 @@ router.get("/", async (req, res) => {
 });
 
 
+// Generic search endpoint for jobs
+// Usage: 
+//   GET /v2/jobs/search?q=term&page=1&limit=30
+//   GET /v2/jobs/search/term?page=1&limit=30
+router.get("/search/:inputedData", async (req, res) => {
+    const q = req.params.inputedData || req.query.q;
+    const page = !req.query.page || isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+    const limit = !req.query.limit || isNaN(req.query.limit) ? 30 : parseInt(req.query.limit);
+
+    if (!q || typeof q !== "string") {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+    }
+
+    try {
+        const searchRegex = new RegExp(q, "i");
+        // Search only within the Jobs model, across key string fields.
+        const query = {
+            $or: [
+                { job_number: searchRegex },
+                { job_description: searchRegex },
+                { job_status_descrp: searchRegex },
+                { job_status: searchRegex },
+                { job_type: searchRegex },
+                { other_description: searchRegex },
+                { application_num: searchRegex },
+                { application_id: searchRegex },
+                { professional_cert: searchRegex }
+            ]
+        };
+
+        const jobs = await Jobs.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        // Return search results in the same shape as /jobs/page/:page/:limit
+        res.json(jobs);
+    } catch (error) {
+        console.error("Error searching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = 30
@@ -171,6 +214,8 @@ router.get("/full", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
 
 
 module.exports = router
