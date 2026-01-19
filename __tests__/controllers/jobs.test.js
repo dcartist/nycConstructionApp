@@ -209,3 +209,61 @@ describe('Jobs Controller - GET /api/v2/jobs', () => {
     expect(response.body[0].property).toHaveProperty('house_num', '123');
   });
 });
+
+describe('Jobs Controller - PUT /api/v2/jobs/edit/:id', () => {
+  let app;
+
+  beforeAll(async () => {
+    await connect();
+    app = createTestApp();
+  });
+
+  afterAll(async () => {
+    await closeDatabase();
+  });
+
+  beforeEach(async () => {
+    await clearDatabase();
+  });
+
+  test('should update an existing job and return updated job', async () => {
+    const originalJob = await Jobs.create({
+      job_number: 'EDIT123',
+      job_description: 'Original description',
+      job_status: 'A',
+    });
+
+    const updateData = {
+      job_description: 'Updated description',
+      job_status: 'P',
+      approved: true,
+    };
+
+    const response = await request(app)
+      .put(`/api/v2/jobs/edit/${originalJob._id}`)
+      .send(updateData)
+      .expect(200);
+
+    expect(response.body.message).toBe('Job updated successfully');
+    expect(response.body.job).toHaveProperty('_id', originalJob._id.toString());
+    expect(response.body.job.job_description).toBe('Updated description');
+    expect(response.body.job.job_status).toBe('P');
+    expect(response.body.job.approved).toBe(true);
+
+    const updatedInDb = await Jobs.findById(originalJob._id);
+    expect(updatedInDb.job_description).toBe('Updated description');
+    expect(updatedInDb.job_status).toBe('P');
+    expect(updatedInDb.approved).toBe(true);
+  });
+
+  test('should return 404 when updating a non-existent job', async () => {
+    const nonExistentId = new mongoose.Types.ObjectId();
+
+    const response = await request(app)
+      .put(`/api/v2/jobs/edit/${nonExistentId}`)
+      .send({ job_description: 'Does not matter' })
+      .expect(404);
+
+    expect(response.body.error).toBe('Job not found');
+  });
+});
