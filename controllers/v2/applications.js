@@ -130,6 +130,35 @@ router.post("/add", async (req, res) => {
     }
 });
 
+// update an existing application/applicant
+router.put("/edit/:id", async (req, res) => {
+    const applicationId = req.params.id;
+    const updateData = req.body;
+
+    try {
+        const updatedApplication = await Application.findByIdAndUpdate(
+            applicationId,
+            updateData,
+            { new: true }
+        );
+
+        if (!updatedApplication) {
+            return res.status(404).json({ error: "Application not found" });
+        }
+
+        res.json({
+            message: "Application updated successfully",
+            application: updatedApplication,
+        });
+    } catch (error) {
+        console.error("Error updating application:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
+
 router.get("/newNumber", async (req, res) => {
 
     // generate a new applicant license number by scanning
