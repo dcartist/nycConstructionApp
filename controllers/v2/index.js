@@ -54,6 +54,7 @@ router.get("/meta", async (req, res) => {
 
 router.use("/owners", ownerController);
 router.use("/jobs", jobsController);
+// Expose applications under both /applications and /applicants
 router.use("/applications", applicationsController);
 router.use("/properties", propertyController);
 router.use("/contractors", contractorsController);
