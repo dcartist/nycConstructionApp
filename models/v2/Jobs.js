@@ -8,19 +8,19 @@ const jobSchemaV2 = new mongoose.Schema({
     },
     prefiling_date: {
         type: Date,
-        default: Date.now
+        default: null
     },
     paid: {
         type: Date,
-        default: Date.now
+        default: null
     },
     latest_action_date: {
         type: Date,
-        default: Date.now
+        default: null
     },
     fully_permitted: {
         type: Date,
-        default: Date.now
+        default: null
     },
     job_description: {
         type: String,

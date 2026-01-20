@@ -5,10 +5,34 @@ const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
 const Application = require('../../models/v2/Application.js')
 
+const applicationTitle =[
+  {
+    "applicant_professional_title": "RA",
+    "description": "Registered Architect"
+  },
+  {
+    "applicant_professional_title": "PE",
+    "description": "Professional Engineer"
+  },
+  {
+    "applicant_professional_title": "RLA",
+    "description": "Registered Landscape Architect"
+  },
+  {
+    "applicant_professional_title": null,
+    "description": "Not provided / blank in source record"
+  }
+]
+
+
 router.get("/", (req, res) => {
     Application.find().then(jobs => {
         res.json(jobs)
     })
+})
+
+router.get("/titles", (req, res) => {
+    res.json(applicationTitle)
 })
 
 router.get("/id/:id", (req, res) => {
@@ -77,7 +101,7 @@ router.get("/id/:applicationID/full", async (req, res) => {
         );
 
         applicationInfo.job_listing = jobapplications;
-
+console.log("Application Info:", applicationInfo);
         res.json(applicationInfo);
     } catch (err) {
         console.error("Error fetching application by ID:", err);
@@ -280,10 +304,52 @@ router.put("/edit/:id", async (req, res) => {
         const updatedApplication = await application.save();
 console.log("Updated application:", updatedApplication);
         res.json(updatedApplication);
+            res.json({
+                message: "Application updated successfully",
+                application: updatedApplication,
+            });
+        } catch (error) {
+            console.error("Error updating application:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    });
+
+
+
+
+router.get("/newNumber", async (req, res) => {
+
+    // generate a new applicant license number by scanning
+    // existing licenses, finding the highest numeric value,
+    // and incrementing it.
+
+    try {
+        const applications = await Application.find({ applicant_license: { $ne: null } }).select("applicant_license");
+
+        let maxLicenseNum = 100000; // starting baseline
+
+        for (const app of applications) {
+            if (!app.applicant_license) continue;
+
+            // Extract numeric portion (handles possible prefixes)
+            const numericPart = app.applicant_license.toString().match(/\d+/);
+            if (!numericPart) continue;
+
+            const num = parseInt(numericPart[0], 10);
+            if (!isNaN(num) && num > maxLicenseNum) {
+                maxLicenseNum = num;
+            }
+        }
+
+        const newLicenseNumber = maxLicenseNum + 1;
+        console.log({ new_application_number: newLicenseNumber.toString() });
+        res.json({ new_application_number: newLicenseNumber.toString() });
     } catch (error) {
-        console.error("Error updating application:", error);
+        console.error("Error generating new applicant license number:", error);
         res.status(500).json({ error: "Internal server error" });
     }
+
+
 });
 
 module.exports = router
