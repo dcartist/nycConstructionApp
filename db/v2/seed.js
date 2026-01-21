@@ -119,6 +119,14 @@ const seedData = async () => {
       borough: item.borough,
       zip: item.zip,
       ownerID: owner._id, // ensure backlink
+      // Map additional fields into PropertyV2 so they appear on property
+      building_type: item.building_type,
+      existing_occupancy: item.existing_occupancy,
+      owner_type: item.owner_type,
+      non_profit: item.non_profit,
+      // These depend on source dataset field names; include if present
+      landmarked: item.landmarked,
+      community___board: item.community___board,
     };
 
     let property = await PropertyV2.findOne(propertyQuery);

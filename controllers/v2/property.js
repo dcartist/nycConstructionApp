@@ -7,21 +7,61 @@ const Application = require('../../models/v2/Application.js')
 
 
 router.get("/", (req, res) => {
-    Property.find().then(jobs => {
-        res.json(jobs)
+    Property.find().then(properties => {
+        res.json(properties)
     })
 })
-router.get("/page/:page", (req, res) => {
-    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
-    const perPage = 30
-    const page = pageNumber || 1
-    Property.find({})
-        .skip((perPage * page) - perPage)
-        .limit(perPage)
-        .then(properties => {
-            res.json(properties)
+
+// Property search endpoint - returns only property documents.
+// Usage:
+//   GET /v2/property/search/:inputedData
+//   GET /v2/property/search/:inputedData?page=1&limit=30
+router.get("/search/:inputedData", async (req, res) => {
+    const q = req.params.inputedData || req.query.q;
+    const page = !req.query.page || isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+    const limit = !req.query.limit || isNaN(req.query.limit) ? 30 : parseInt(req.query.limit);
+
+    if (!q || typeof q !== "string") {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+    }
+
+    try {
+        const searchRegex = new RegExp(q, "i");
+
+        const properties = await Property.find({
+            $or: [
+                { street_name: searchRegex },
+                { borough: searchRegex },
+                { house_num: searchRegex }
+            ]
         })
-})
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        res.json(properties);
+    } catch (error) {
+        console.error("Error searching properties:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+// router.get("/search/:searchTerm/", (req, res) => {
+//     let searchTerm = req.params.searchTerm
+//     const searchRegex = new RegExp(searchTerm, 'i');
+
+//     Property.find({
+//         $or: [
+//             { street_name: searchRegex }, 
+//             { borough: searchRegex },
+//             { house_num: searchRegex },
+//             { zip_code: searchRegex }
+//         ]
+//     })
+//         .then(properties => {
+//             res.json(properties)
+//         })
+// })
 
 router.get("/id/:propertyID", async (req, res) => {
     if (!req.params.propertyID) {

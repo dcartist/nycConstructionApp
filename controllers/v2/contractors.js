@@ -3,6 +3,7 @@ const Jobs = require('../../models/v2/Jobs.js')
 const Metadata = require('../../models/v2/Metadata.js')
 const Application = require('../../models/v2/Application.js')
 const express = require("express");
+const { route } = require('../contractor.js');
 const router = express.Router();
 
 
@@ -13,6 +14,14 @@ router.get("/", (req, res) => {
     })
 })
 
+
+router.get("/shortlist/", (req, res) => {
+    Contractor.find({}, { first_name: 1, last_name: 1, license_sl_no: 1, license_type: 1 }).then(contractors => {
+        res.json(contractors)
+    })
+})  
+
+
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
     const perPage = 30
@@ -22,6 +31,28 @@ router.get("/page/:page", (req, res) => {
         .limit(perPage)
         .then(contractor => {
             res.json(contractor)
+        })
+})
+
+router.get("/search/:searchTerm/page/:page", (req, res) => {
+    let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
+    const perPage = 30
+    const page = pageNumber || 1
+    let searchTerm = req.params.searchTerm
+    const searchRegex = new RegExp(searchTerm, 'i');
+
+    Contractor.find({
+        $or: [
+            { first_name: searchRegex }, 
+            { last_name: searchRegex },
+            { license_number: searchRegex },
+            { company_name: searchRegex }
+        ]
+    })
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .then(contractors => {
+            res.json(contractors)
         })
 })
 
