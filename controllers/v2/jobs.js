@@ -40,6 +40,104 @@ const jobsStatusMap = [
   { "job_status": "3", "job_status_short": "Suspended", "job_status_descrp": "SUSPENDED" }
 ]
 
+// Generic search endpoint for jobs that can also
+// match on related property fields (house_num, street_name, borough).
+// Usage:
+//   GET /api/v2/jobs/search/:inputedData
+//   GET /api/v2/jobs/search/:inputedData?page=1&limit=30
+router.get("/search/:inputedData", async (req, res) => {
+    const q = req.params.inputedData || req.query.q;
+    const page = !req.query.page || isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+    const limit = !req.query.limit || isNaN(req.query.limit) ? 30 : parseInt(req.query.limit);
+
+    if (!q || typeof q !== "string") {
+        return res.status(400).json({ error: "Query parameter 'q' is required" });
+    }
+
+    try {
+        const searchRegex = new RegExp(q, "i");
+
+        // First, find any properties that match the search term.
+        const matchingProperties = await Property.find({
+            $or: [
+                { house_num: searchRegex },
+                { street_name: searchRegex },
+                { borough: searchRegex }
+            ]
+        }).select("_id house_num street_name borough");
+
+        const propertyIds = matchingProperties.map((p) => p._id);
+
+        // Build a jobs query that matches either job fields or
+        // any job whose propertyID points at a matching property.
+        const jobQuery = {
+            $or: [
+                { job_number: searchRegex },
+                { job_description: searchRegex },
+                { job_status_descrp: searchRegex },
+                { job_status: searchRegex },
+                { job_type: searchRegex },
+                { other_description: searchRegex },
+                { application_num: searchRegex },
+                { application_id: searchRegex },
+                { professional_cert: searchRegex },
+                ...(propertyIds.length
+                    ? [{ propertyID: { $in: propertyIds } }]
+                    : [])
+            ]
+        };
+
+        const jobs = await Jobs.find(jobQuery)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean();
+
+        // Collect all property IDs from the resulting jobs so we can
+        // attach property details to each job in the response.
+        const jobPropertyIds = [
+            ...new Set(
+                jobs
+                    .filter((job) => job.propertyID)
+                    .map((job) => job.propertyID.toString())
+            )
+        ];
+
+        let propertiesById = {};
+        if (jobPropertyIds.length) {
+            const propertiesForJobs = await Property.find({
+                _id: { $in: jobPropertyIds }
+            }).select("_id house_num street_name borough").lean();
+
+            propertiesById = propertiesForJobs.reduce((acc, prop) => {
+                acc[prop._id.toString()] = prop;
+                return acc;
+            }, {});
+        }
+
+        const jobsWithProperty = jobs.map((job) => {
+            const prop = job.propertyID
+                ? propertiesById[job.propertyID.toString()] || null
+                : null;
+
+            return {
+                ...job,
+                property: prop
+                    ? {
+                          house_num: prop.house_num || null,
+                          street_name: prop.street_name || null,
+                          borough: prop.borough || null
+                      }
+                    : null
+            };
+        });
+
+        res.json(jobsWithProperty);
+    } catch (error) {
+        console.error("Error searching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // GET: All Jobs with Property details
 router.get("/", async (req, res) => {
     try {
