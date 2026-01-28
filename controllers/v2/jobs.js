@@ -5,6 +5,33 @@ const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
 const Application = require('../../models/v2/Application.js')
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     JobType:
+ *       type: object
+ *       properties:
+ *         job_type:
+ *           type: string
+ *           example: "A1"
+ *         label:
+ *           type: string
+ *           example: "Alteration Type 1"
+ *     JobStatus:
+ *       type: object
+ *       properties:
+ *         job_status:
+ *           type: string
+ *           example: "A"
+ *         job_status_short:
+ *           type: string
+ *           example: "Pre-Filed"
+ *         job_status_descrp:
+ *           type: string
+ *           example: "PRE-FILING"
+ */
+
 const jobTypeCode = [
   { "job_type": "A1", "label": "Alteration Type 1" },
   { "job_type": "A2", "label": "Alteration Type 2" },
@@ -40,6 +67,36 @@ const jobsStatusMap = [
   { "job_status": "3", "job_status_short": "Suspended", "job_status_descrp": "SUSPENDED" }
 ]
 
+/**
+ * @swagger
+ * /api/v2/jobs/search/{inputedData}:
+ *   get:
+ *     summary: Search for jobs by various criteria
+ *     description: Search for construction jobs by job number, description, status, type, or related property information (house number, street name, borough)
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: inputedData
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search query string
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *     responses:
+ *       200:
+ *         description: List of matching jobs with property details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Job'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // Generic search endpoint for jobs that can also
 // match on related property fields (house_num, street_name, borough).
 // Usage:
@@ -138,6 +195,25 @@ router.get("/search/:inputedData", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/v2/jobs:
+ *   get:
+ *     summary: Get all construction jobs
+ *     description: Retrieve all construction jobs with associated property details
+ *     tags: [Jobs]
+ *     responses:
+ *       200:
+ *         description: List of all jobs with property information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Job'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // GET: All Jobs with Property details
 router.get("/", async (req, res) => {
     try {
@@ -172,6 +248,31 @@ router.get("/", async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /api/v2/jobs/page/{page}:
+ *   get:
+ *     summary: Get paginated jobs (30 per page)
+ *     description: Retrieve jobs with pagination, default 30 items per page
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Page number
+ *     responses:
+ *       200:
+ *         description: Paginated list of jobs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Job'
+ */
 // GET: Paginated Jobs
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
@@ -186,6 +287,39 @@ router.get("/page/:page", (req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /api/v2/jobs/page/{page}/{limit}:
+ *   get:
+ *     summary: Get paginated jobs with custom limit
+ *     description: Retrieve jobs with pagination and custom number of items per page
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Page number
+ *       - in: path
+ *         name: limit
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: Paginated list of jobs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Job'
+ */
 // GET: Paginated Jobs with custom limit
 router.get("/page/:page/:limit", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
@@ -200,16 +334,79 @@ router.get("/page/:page/:limit", (req, res) => {
 })
 
 
+/**
+ * @swagger
+ * /api/v2/jobs/statusmap:
+ *   get:
+ *     summary: Get job status map
+ *     description: Retrieve a list of all job status codes with their descriptions
+ *     tags: [Jobs]
+ *     responses:
+ *       200:
+ *         description: List of job status codes and descriptions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/JobStatus'
+ */
 // GET: Job STATUS MAP
 router.get("/statusmap", (req, res) => {
     res.json(jobsStatusMap)
 })
+
+/**
+ * @swagger
+ * /api/v2/jobs/types:
+ *   get:
+ *     summary: Get job type codes
+ *     description: Retrieve a list of all job type codes with their labels
+ *     tags: [Jobs]
+ *     responses:
+ *       200:
+ *         description: List of job type codes and labels
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/JobType'
+ */
 // GET: Job TYPE CODE
 router.get("/types", (req, res) => {
     res.json(jobTypeCode)
 })
 
 
+/**
+ * @swagger
+ * /api/v2/jobs/number/{job_number}:
+ *   get:
+ *     summary: Get job by job number
+ *     description: Retrieve a specific job by its job number with property and contractor details
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: job_number
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The job number to search for
+ *     responses:
+ *       200:
+ *         description: Job details with property and contractors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Job'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // GET: Job by JOB NUMBER with Property and Contractors details
 router.get("/number/:job_number", async (req, res) => {
     if (!req.params.job_number) {
@@ -239,6 +436,32 @@ console.log("Job Info:", jobInfo);
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/jobs/id/{id}:
+ *   get:
+ *     summary: Get job by ID
+ *     description: Retrieve detailed job information by job ID including property, application, and contractors
+ *     tags: [Jobs]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The job's MongoDB ObjectId
+ *     responses:
+ *       200:
+ *         description: Complete job details with related entities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Job'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // GET: Job by ID with Property, Application, and Contractors details
 router.get("/id/:id", async (req, res) => {
     try {
