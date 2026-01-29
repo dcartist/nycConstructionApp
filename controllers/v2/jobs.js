@@ -534,10 +534,51 @@ router.put("/edit/:id", async (req, res) => {
         const jobId = req.params.id;
         const updateData = req.body;
 
+        // Get the original job to compare contractors
+        const originalJob = await Jobs.findById(jobId);
+        if (!originalJob) {
+            return res.status(404).json({ error: "Job not found" });
+        }
+
+        // Validate contractors if provided
+        if (updateData.contractors && updateData.contractors.length > 0) {
+            const validContractors = await Contractor.find({ _id: { $in: updateData.contractors } });
+            if (validContractors.length !== updateData.contractors.length) {
+                return res.status(400).json({ error: "One or more contractor IDs are invalid" });
+            }
+        }
+
         const updatedJob = await Jobs.findByIdAndUpdate(jobId, updateData, { new: true });
 
-        if (!updatedJob) {
-            return res.status(404).json({ error: "Job not found" });
+        // Handle contractor job_listing updates
+        const originalContractorIds = originalJob.contractors || [];
+        const newContractorIds = updateData.contractors || originalContractorIds;
+        const jobNumber = updatedJob.job_number;
+
+        // Find contractors to remove (in original but not in new)
+        const contractorsToRemove = originalContractorIds.filter(
+            id => !newContractorIds.includes(id)
+        );
+
+        // Find contractors to add (in new but not in original)
+        const contractorsToAdd = newContractorIds.filter(
+            id => !originalContractorIds.includes(id)
+        );
+
+        // Remove job number from contractors no longer associated
+        if (contractorsToRemove.length > 0 && jobNumber) {
+            await Contractor.updateMany(
+                { _id: { $in: contractorsToRemove } },
+                { $pull: { job_listing: jobNumber } }
+            );
+        }
+
+        // Add job number to new contractors
+        if (contractorsToAdd.length > 0 && jobNumber) {
+            await Contractor.updateMany(
+                { _id: { $in: contractorsToAdd } },
+                { $addToSet: { job_listing: jobNumber } }
+            );
         }
 
         res.json({
@@ -676,6 +717,15 @@ router.post("/add", async (req, res) => {
                 await applicationDoc.save();
             }
         }
+
+        // Add job number to contractors' job_listing
+        if (contractors && contractors.length > 0 && savedJob.job_number) {
+            await Contractor.updateMany(
+                { _id: { $in: contractors } },
+                { $addToSet: { job_listing: savedJob.job_number } }
+            );
+        }
+
         res.status(201).json({
             message: "Job created successfully",
             job: savedJob
