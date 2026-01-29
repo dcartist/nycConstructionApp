@@ -6,8 +6,8 @@ const Metadata = require('../../models/v2/Metadata.js')
 const Application = require('../../models/v2/Application.js')
 const Property = require('../../models/v2/Property.js')
 
-const licenseTypes = [
-     "Active",
+const license_status = [
+ "Active",
   "Expired",
   "Ready for Renewal",
   "Surrendered",
@@ -215,8 +215,8 @@ router.get("/license/status/:status", async (req, res) => {
     }
 })
 
-router.get("/license/types", async (req, res) => {
-    res.json(licenseTypes);
+router.get("/license/status", async (req, res) => {
+    res.json(license_status);
 })
 
 
