@@ -4,6 +4,7 @@ const Contractor = require('../../models/v2/Contractor.js')
 const Jobs = require('../../models/v2/Jobs.js')
 const Metadata = require('../../models/v2/Metadata.js')
 const Application = require('../../models/v2/Application.js')
+const Property = require('../../models/v2/Property.js')
 
 const licenseTypes = [
      "Active",
@@ -135,7 +136,37 @@ router.get("/id/:contractorID", async (req, res) => {
             return res.status(404).json({ error: "Contractor not found" });
         }
 
-        res.json(contractor);
+        // Fetch jobs using the job_listing array
+        const jobs = contractor.job_listing && contractor.job_listing.length > 0
+            ? await Jobs.find({ _id: { $in: contractor.job_listing } })
+            : [];
+
+        // Fetch property information for each job
+        const jobsWithProperty = await Promise.all(
+            jobs.map(async (job) => {
+                const property = job.propertyID 
+                    ? await Property.findById(job.propertyID)
+                    : null;
+                
+                const jobObj = job.toObject();
+                jobObj.property = property ? {
+                    _id: property._id,
+                    house_num: property.house_num,
+                    street_name: property.street_name,
+                    borough: property.borough,
+                    zip: property.zip,
+                    building_type: property.building_type,
+                    existing_occupancy: property.existing_occupancy
+                } : null;
+                
+                return jobObj;
+            })
+        );
+
+        const contractorInfo = { ...contractor.toObject() };
+        contractorInfo.jobs = jobsWithProperty;
+
+        res.json(contractorInfo);
     } catch (error) {
         console.error("Error fetching contractor by ID:", error);
         res.status(500).json({ error: "Internal server error" });

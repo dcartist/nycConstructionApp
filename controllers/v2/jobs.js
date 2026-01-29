@@ -553,7 +553,7 @@ router.put("/edit/:id", async (req, res) => {
         // Handle contractor job_listing updates
         const originalContractorIds = originalJob.contractors || [];
         const newContractorIds = updateData.contractors || originalContractorIds;
-        const jobNumber = updatedJob.job_number;
+        const jobIdString = updatedJob._id.toString();
 
         // Find contractors to remove (in original but not in new)
         const contractorsToRemove = originalContractorIds.filter(
@@ -565,19 +565,19 @@ router.put("/edit/:id", async (req, res) => {
             id => !originalContractorIds.includes(id)
         );
 
-        // Remove job number from contractors no longer associated
-        if (contractorsToRemove.length > 0 && jobNumber) {
+        // Remove job._id from contractors no longer associated
+        if (contractorsToRemove.length > 0 && jobIdString) {
             await Contractor.updateMany(
                 { _id: { $in: contractorsToRemove } },
-                { $pull: { job_listing: jobNumber } }
+                { $pull: { job_listing: jobIdString } }
             );
         }
 
-        // Add job number to new contractors
-        if (contractorsToAdd.length > 0 && jobNumber) {
+        // Add job._id to new contractors
+        if (contractorsToAdd.length > 0 && jobIdString) {
             await Contractor.updateMany(
                 { _id: { $in: contractorsToAdd } },
-                { $addToSet: { job_listing: jobNumber } }
+                { $addToSet: { job_listing: jobIdString } }
             );
         }
 
@@ -718,11 +718,11 @@ router.post("/add", async (req, res) => {
             }
         }
 
-        // Add job number to contractors' job_listing
-        if (contractors && contractors.length > 0 && savedJob.job_number) {
+        // Add job._id to contractors' job_listing
+        if (contractors && contractors.length > 0 && savedJob._id) {
             await Contractor.updateMany(
                 { _id: { $in: contractors } },
-                { $addToSet: { job_listing: savedJob.job_number } }
+                { $addToSet: { job_listing: savedJob._id.toString() } }
             );
         }
 
