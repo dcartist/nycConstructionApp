@@ -19,6 +19,37 @@ const license_status = [
   "Close"
 ]
 
+const licenseTypes = [
+  "Concrete Safety Manager",
+  "Concrete Testing Laboratory",
+  "Construction Superintendent",
+  "Contractor",
+  "Electrician",
+  "Elevator Licenses & Helper Card",
+  "Filing Representative",
+  "Gas Work Qualification",
+  "General Contractor Registration",
+  "High Pressure Boiler Operating Engineer",
+  "Hoisting Machine Operator",
+  "Limited Hoisting Machine Operator",
+  "Lift Director Registration",
+  "N/A",
+  "Not Licensed",
+  "Nursery Registration",
+  "Oil Burner Equipment Installer",
+  "Operating Engineer",
+  "Other",
+  "Plumber",
+  "Plumbing and Fire Suppression (Master and Journeyman)",
+  "Professional/Inter-Agency Identification Card",
+  "Rigger",
+  "Safety Registration",
+  "Sign Hanger",
+  "Site Safety Professional",
+  "Special Inspection Agency",
+  "Welder"
+]
+
 
 
 router.get("/", async (req, res) => {
@@ -27,6 +58,50 @@ router.get("/", async (req, res) => {
         res.json(contractors);
     } catch (error) {
         console.error("Error fetching contractors:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
+
+// edit/update a contractor using the model fields directly
+router.put("/edit/:_id", async (req, res) => {
+    console.log("Contractor update request body:", req.body);
+
+    try {
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                error: "Request body is empty. Ensure Content-Type is application/json."
+            });
+        }
+
+        const contractorId = req.params._id;
+
+        // Only allow fields that exist on the Contractor model
+        const modelFields = Object.keys(Contractor.schema.paths).filter(
+            (field) => !["_id", "__v"].includes(field)
+        );
+
+        const updatePayload = {};
+        modelFields.forEach((field) => {
+            if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+                updatePayload[field] = req.body[field];
+            }
+        });
+
+        console.log("Contractor update payload:", updatePayload);
+
+        const updatedContractor = await Contractor.findByIdAndUpdate(
+            contractorId,
+            { $set: updatePayload },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedContractor) {
+            return res.status(404).json({ error: "Contractor not found" });
+        }
+
+        res.json(updatedContractor);
+    } catch (error) {
+        console.error("Error updating contractor:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 })
@@ -125,13 +200,13 @@ router.get("/search/:searchTerm/page/:page", async (req, res) => {
     }
 })
 
-router.get("/id/:contractorID", async (req, res) => {
+router.get("/id/:_id", async (req, res) => {
     try {
-        if (!req.params.contractorID) {
+        if (!req.params._id) {
             return res.status(400).json({ error: "Contractor ID is required" });
         }
 
-        const contractor = await Contractor.findById(req.params.contractorID);
+        const contractor = await Contractor.findById(req.params._id);
         if (!contractor) {
             return res.status(404).json({ error: "Contractor not found" });
         }
@@ -173,18 +248,18 @@ router.get("/id/:contractorID", async (req, res) => {
     }
 })
 
-router.get("/id/:contractorID/full", async (req, res) => {
+router.get("/id/:_id/full", async (req, res) => {
     try {
-        if (!req.params.contractorID) {
+        if (!req.params._id) {
             return res.status(400).json({ error: "Contractor ID is required" });
         }
 
-        const contractor = await Contractor.findById(req.params.contractorID);
+        const contractor = await Contractor.findById(req.params._id);
         if (!contractor) {
             return res.status(404).json({ error: "Contractor not found" });
         }
 
-        const jobs = await Jobs.find({ contractors: { $in: [req.params.contractorID] } });
+        const jobs = await Jobs.find({ contractors: { $in: [req.params._id] } });
         const contractorInfo = { ...contractor.toObject() };
         contractorInfo.jobs = jobs;
 
@@ -216,114 +291,15 @@ router.get("/license/status/:status", async (req, res) => {
 })
 
 router.get("/license/status", async (req, res) => {
-    res.json(license_status);
+    res.json(license_status.map(status => status.toUpperCase()));
+})
+
+router.get("/license/types", async (req, res) => {   
+    res.json(licenseTypes.map(type => type.toUpperCase()));
 })
 
 
-// edit/update a contractor and keep related jobs in sync
-router.put("/edit/:id", async (req, res) => {
-    try {
-        const contractorId = req.params.id;
-        const contractor = await Contractor.findById(contractorId);
-        
-        if (!contractor) {
-            return res.status(404).json({ error: "Contractor not found" });
-        }
 
-        const {
-            first_name,
-            last_name,
-            license_number,
-            license_type,
-            license_status,
-            company_name
-        } = req.body;
-
-        // Update basic fields if provided
-        if (typeof first_name === "string") contractor.first_name = first_name;
-        if (typeof last_name === "string") contractor.last_name = last_name;
-        if (typeof license_number === "string") contractor.license_number = license_number;
-        if (typeof license_type === "string") contractor.license_type = license_type;
-        if (typeof license_status === "string") contractor.license_status = license_status;
-        if (typeof company_name === "string") contractor.company_name = company_name;
-
-        // If no jobs array was provided, only update contractor fields
-        const jobsFromBody = req.body.jobs;
-        if (typeof jobsFromBody === "undefined") {
-            const updatedContractor = await contractor.save();
-            console.log("Updated contractor (no job changes):", updatedContractor);
-            return res.json(updatedContractor);
-        }
-
-        // Normalize incoming job IDs
-        let newJobIds;
-        if (Array.isArray(jobsFromBody)) {
-            newJobIds = jobsFromBody.map((id) => (id != null ? String(id) : id)).filter(Boolean);
-        } else if (typeof jobsFromBody === "string") {
-            newJobIds = jobsFromBody
-                .split(",")
-                .map((id) => id.trim())
-                .filter(Boolean);
-        } else {
-            newJobIds = [];
-        }
-
-        // Find the Job documents for the incoming IDs
-        const newJobs = newJobIds.length
-            ? await Jobs.find({ _id: { $in: newJobIds } })
-            : [];
-
-        const newJobIdSet = new Set(newJobs.map((j) => j._id.toString()));
-
-        // Find currently associated jobs
-        const currentJobs = await Jobs.find({ contractors: { $in: [contractorId] } });
-        const currentJobIds = currentJobs.map((j) => j._id.toString());
-
-        const removedJobIds = currentJobIds.filter((id) => !newJobIdSet.has(id));
-        const addedJobIds = Array.from(newJobIdSet).filter((id) => !currentJobIds.includes(id));
-
-        // Remove contractor from jobs that are no longer associated
-        if (removedJobIds.length > 0) {
-            await Jobs.updateMany(
-                { _id: { $in: removedJobIds } },
-                { $pull: { contractors: contractorId } }
-            );
-        }
-
-        // Add contractor to new jobs
-        if (addedJobIds.length > 0) {
-            await Jobs.updateMany(
-                { _id: { $in: addedJobIds } },
-                { $addToSet: { contractors: contractorId } }
-            );
-        }
-
-        const updatedContractor = await contractor.save();
-        console.log("Updated contractor:", updatedContractor);
-        res.json(updatedContractor);
-    } catch (error) {
-        console.error("Error updating contractor:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-})
-
-// Keep old edit route for backward compatibility
-router.put("/edit/:contractorID", async (req, res) => {
-    try {
-        const updatedContractor = await Contractor.findByIdAndUpdate(
-            req.params.contractorID,
-            req.body,
-            { new: true, runValidators: true }
-        );
-        if (!updatedContractor) {
-            return res.status(404).json({ error: "Contractor not found" });
-        }
-        res.json(updatedContractor);
-    } catch (error) {
-        console.error("Error updating contractor:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-})
 
 //Adding Contractors into the database
 router.post("/add", async (req, res) => {
