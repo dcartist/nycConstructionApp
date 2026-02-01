@@ -7,7 +7,10 @@ This dataset contains all job applications submitted through the Borough Offices
 
 ## Technology Used
  * javascript
- * ExpressJs
+ * ExpressJS
+ * Jest
+ * Swagger
+ * Morgan
  * Heroku
  * Mongoose/Mongo DB
  * Cors
