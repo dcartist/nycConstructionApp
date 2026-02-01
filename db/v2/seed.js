@@ -198,6 +198,14 @@ const seedData = async () => {
       }
       job.contractors = selectedContractors;
       await job.save();
+
+      // Add job._id to each contractor's job_listing
+      if (selectedContractors.length > 0) {
+        await ContractorV2.updateMany(
+          { _id: { $in: selectedContractors } },
+          { $addToSet: { job_listing: job._id.toString() } }
+        );
+      }
     }
 
 // Adding Applications into the database

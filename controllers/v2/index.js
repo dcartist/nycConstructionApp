@@ -17,13 +17,69 @@ const ownerController = require("./owners.js");
 //   }
 // });
 
+/**
+ * @swagger
+ * /api/v2:
+ *   get:
+ *     summary: API v2 welcome message
+ *     description: Returns a welcome message for the API v2
+ *     tags: [API Info]
+ *     responses:
+ *       200:
+ *         description: Welcome message
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: "Welcome to the API v2"
+ */
 router.get("/", (req, res) => {
    res.send("Welcome to the API v2");
 })
 
+/**
+ * @swagger
+ * /api/v2/status:
+ *   get:
+ *     summary: API health check
+ *     description: Returns the current status of the API v2 with timestamp
+ *     tags: [API Info]
+ *     responses:
+ *       200:
+ *         description: API status information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "API v2 is running"
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get("/status", (req, res) => {
    res.json({ status: "API v2 is running", timestamp: new Date() });
 })
+
+/**
+ * @swagger
+ * /api/v2/meta:
+ *   get:
+ *     summary: Get database metadata
+ *     description: Returns counts of all major collections in the database
+ *     tags: [API Info]
+ *     responses:
+ *       200:
+ *         description: Database statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Metadata'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/meta", async (req, res) => {
 // go through all the collections and get the counts then insert into metadata collection
   try {
