@@ -1,4 +1,5 @@
-const mongoose = require('../../db/connection')
+const mongoose = require('../../db/connection');
+const Jobs = require('./Jobs');
 
 const contractorSchemaV2 = new mongoose.Schema({
     license_sl_no: {
@@ -52,7 +53,10 @@ const contractorSchemaV2 = new mongoose.Schema({
       license_status: {
         type: String,
         required: true
-      }
+      },
+      job_listing: { type: [String],
+        default: [],}
+
 }, {timeseries: true});
 
 
