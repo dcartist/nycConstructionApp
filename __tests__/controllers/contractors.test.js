@@ -84,4 +84,108 @@ describe('Contractors Controller', () => {
       expect(response.body).toHaveProperty('business_name', 'XYZ Construction');
     });
   });
+
+  describe('PUT /api/v2/contractors/edit/:id', () => {
+    test('should update an existing contractor with allowed fields only', async () => {
+      const contractor = await Contractor.create({
+        business_name: 'Old Name',
+        business_house_number: '300',
+        business_street_name: 'Old St',
+        license_business_city: 'Queens',
+        business_state: 'NY',
+        business_zip_code: '11111',
+        business_phone_number: '5550000000',
+        license_status: 'ACTIVE'
+      });
+
+      const updatePayload = {
+        business_name: 'New Name',
+        license_status: 'EXPIRED',
+        someRandomField: 'shouldBeIgnored'
+      };
+
+      const response = await request(app)
+        .put(`/api/v2/contractors/edit/${contractor._id}`)
+        .send(updatePayload)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('_id', contractor._id.toString());
+      expect(response.body).toHaveProperty('business_name', 'New Name');
+      expect(response.body).toHaveProperty('license_status', 'EXPIRED');
+      expect(response.body).not.toHaveProperty('someRandomField');
+
+      const updatedFromDb = await Contractor.findById(contractor._id);
+      expect(updatedFromDb.business_name).toBe('New Name');
+      expect(updatedFromDb.license_status).toBe('EXPIRED');
+    });
+
+    test('should return 400 when body is empty', async () => {
+      const contractor = await Contractor.create({
+        business_name: 'Name',
+        business_house_number: '10',
+        business_street_name: 'Any St',
+        license_business_city: 'NYC',
+        business_state: 'NY',
+        business_zip_code: '10000',
+        business_phone_number: '5551111111',
+        license_status: 'ACTIVE'
+      });
+
+      const response = await request(app)
+        .put(`/api/v2/contractors/edit/${contractor._id}`)
+        .send({})
+        .expect(400);
+
+      expect(response.body).toHaveProperty('error');
+    });
+
+    test('should return 404 when contractor does not exist', async () => {
+      const nonExistingId = '65a0f3b8c1a5f5c1c0d9f123';
+
+      const response = await request(app)
+        .put(`/api/v2/contractors/edit/${nonExistingId}`)
+        .send({ business_name: 'Does Not Matter' })
+        .expect(404);
+
+      expect(response.body).toHaveProperty('error', 'Contractor not found');
+    });
+  });
+
+  describe('GET /api/v2/contractors/newNumber', () => {
+    test('should return baseline new number when no license numbers exist', async () => {
+      const response = await request(app)
+        .get('/api/v2/contractors/newNumber')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('new_contractor_number');
+      expect(response.body.new_contractor_number).toBe('100001');
+    });
+
+    test('should return next sequential number based on existing licenses', async () => {
+      await Contractor.create([
+        {
+          business_name: 'Contractor 1',
+          license_number: '100150',
+          license_status: 'ACTIVE'
+        },
+        {
+          business_name: 'Contractor 2',
+          license_number: 'ABC100200',
+          license_status: 'ACTIVE'
+        },
+        {
+          business_name: 'Contractor 3',
+          license_number: null,
+          license_status: 'ACTIVE'
+        }
+      ]);
+
+      const response = await request(app)
+        .get('/api/v2/contractors/newNumber')
+        .expect(200);
+
+      // Highest numeric part is 100200 so next should be 100201
+      expect(response.body).toHaveProperty('new_contractor_number', '100201');
+    });
+  });
 });
