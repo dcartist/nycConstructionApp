@@ -299,6 +299,42 @@ router.get("/license/types", async (req, res) => {
 })
 
 
+router.get("/newNumber", async (req, res) => {
+
+    // generate a new contractor license number by scanning
+    // existing licenses, finding the highest numeric value,
+    // and incrementing it.
+
+    try {
+        const contractors = await Contractor.find({ license_number: { $ne: null } }).select("license_number");
+
+        let maxLicenseNum = 100000; // starting baseline
+
+        for (const contractor of contractors) {
+            if (!contractor.license_number) continue;
+
+            // Extract numeric portion (handles possible prefixes)
+            const numericPart = contractor.license_number.toString().match(/\d+/);
+            if (!numericPart) continue;
+
+            const num = parseInt(numericPart[0], 10);
+            if (!isNaN(num) && num > maxLicenseNum) {
+                maxLicenseNum = num;
+            }
+        }
+
+        const newLicenseNumber = maxLicenseNum + 1;
+        console.log({ new_contractor_number: newLicenseNumber.toString() });
+        res.json({ new_contractor_number: newLicenseNumber.toString() });
+    } catch (error) {
+        console.error("Error generating new contractor license number:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+
+});
+
+
 
 
 //Adding Contractors into the database
