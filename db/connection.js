@@ -33,3 +33,4 @@ async function connectDB() {
 connectDB().catch(error => console.log('Connection failed!', error));
 
 module.exports = mongoose;
+module.exports.connectDB = connectDB;

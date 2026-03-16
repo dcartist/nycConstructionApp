@@ -4,6 +4,8 @@ const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
 
+const { connectDB } = require('./db/connection');
+
 const { swaggerSpec } = require('./config/swagger');
 const conController = require('./controllers/contractor.js');
 const ownController = require('./controllers/owner.js');
