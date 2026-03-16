@@ -20,8 +20,7 @@ async function connectDB() {
             useUnifiedTopology: true,
             serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
-            bufferCommands: false,
-        }).then(instance => {
+            }).then(instance => {
             console.log(`Connected to db: ${instance.connections[0].name}`);
             return instance;
         });
