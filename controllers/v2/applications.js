@@ -24,18 +24,86 @@ const applicationTitle =[
   }
 ]
 
-
+/**
+ * @swagger
+ * /api/v2/applications:
+ *   get:
+ *     summary: Get all applications
+ *     tags: [Applications]
+ *     description: Retrieve all job applications from the database
+ *     responses:
+ *       200:
+ *         description: List of all applications
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Application'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/", (req, res) => {
     Application.find().then(jobs => {
         res.json(jobs)
     })
 })
 
-
+/**
+ * @swagger
+ * /api/v2/applications/titles:
+ *   get:
+ *     summary: Get applicant professional titles
+ *     tags: [Applications]
+ *     description: Retrieve list of valid professional titles for applicants (RA, PE, RLA)
+ *     responses:
+ *       200:
+ *         description: List of professional titles with descriptions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   applicant_professional_title:
+ *                     type: string
+ *                     nullable: true
+ *                     example: "RA"
+ *                   description:
+ *                     type: string
+ *                     example: "Registered Architect"
+ */
 router.get("/titles", (req, res) => {
     res.json(applicationTitle)
 })
 
+/**
+ * @swagger
+ * /api/v2/applications/id/{id}:
+ *   get:
+ *     summary: Get application by ID
+ *     tags: [Applications]
+ *     description: Retrieve a specific application by its MongoDB ObjectID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Application MongoDB ObjectID
+ *     responses:
+ *       200:
+ *         description: Application details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Application'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/id/:id", (req, res) => {
     Application.findById(req.params.id).then(job => {
         if (!job) {
@@ -48,6 +116,68 @@ router.get("/id/:id", (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /api/v2/applications/id/{applicationID}/full:
+ *   get:
+ *     summary: Get application with full job details
+ *     tags: [Applications]
+ *     description: Retrieve application with populated job and property information for all jobs in job_listing
+ *     parameters:
+ *       - in: path
+ *         name: applicationID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Application MongoDB ObjectID
+ *     responses:
+ *       200:
+ *         description: Application with enriched job details including property information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Application'
+ *                 - type: object
+ *                   properties:
+ *                     job_listing:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           job_id:
+ *                             type: string
+ *                           approved:
+ *                             type: boolean
+ *                           job_number:
+ *                             type: string
+ *                           job_description:
+ *                             type: string
+ *                           job_type:
+ *                             type: string
+ *                           job_status:
+ *                             type: string
+ *                           job_status_descrp:
+ *                             type: string
+ *                           property:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                               house_num:
+ *                                 type: string
+ *                               street_name:
+ *                                 type: string
+ *                               borough:
+ *                                 type: string
+ *                               zip:
+ *                                 type: string
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/id/:applicationID/full", async (req, res) => {
     try {
         const application = await Application.findById(req.params.applicationID);
@@ -110,6 +240,34 @@ router.get("/id/:applicationID/full", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/v2/applications/page/{page}:
+ *   get:
+ *     summary: Get applications with pagination
+ *     tags: [Applications]
+ *     description: Retrieve applications with pagination (30 items per page)
+ *     parameters:
+ *       - in: path
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number (starts at 1)
+ *     responses:
+ *       200:
+ *         description: Paginated list of applications
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Application'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // main router with pagination
 router.get("/page/:page", (req, res) => {
     let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
@@ -123,6 +281,33 @@ router.get("/page/:page", (req, res) => {
         })
 })
 
+/**
+ * @swagger
+ * /api/v2/applications/license/{applicant_license}:
+ *   get:
+ *     summary: Find applications by license number
+ *     tags: [Applications]
+ *     description: Retrieve all applications for a specific applicant license number
+ *     parameters:
+ *       - in: path
+ *         name: applicant_license
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Applicant license number
+ *         example: "100001"
+ *     responses:
+ *       200:
+ *         description: List of applications matching the license
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Application'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // find by applicant_license
 router.get("/license/:applicant_license", (req, res) => {
     Application.find({ applicant_license: req.params.applicant_license }).then(jobs => {
@@ -130,10 +315,54 @@ router.get("/license/:applicant_license", (req, res) => {
     })
 })
 
+/**
+ * @swagger
+ * /api/v2/applications/search/{inputedData}:
+ *   get:
+ *     summary: Search applications
+ *     tags: [Applications]
+ *     description: Search applications by first name, last name, title, license number, or job numbers. Supports pagination.
+ *     parameters:
+ *       - in: path
+ *         name: inputedData
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term (searches across multiple fields)
+ *         example: "Smith"
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 30
+ *         description: Number of results per page
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Application'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // Generic search endpoint for applicants/applications
 // Usage examples:
-//   GET /api/v2/applicants/search/301
-//   GET /api/v2/applicants/search/Smith?page=1&limit=50
+//   GET /api/v2/applications/search/301
+//   GET /api/v2/applications/search/Smith?page=1&limit=50
 router.get("/search/:inputedData", async (req, res) => {
     const q = req.params.inputedData || req.query.q;
     const page = !req.query.page || isNaN(req.query.page) ? 1 : parseInt(req.query.page);
@@ -310,6 +539,29 @@ console.log("Updated application:", updatedApplication);
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+/**
+ * @swagger
+ * /api/v2/applications/newNumber:
+ *   get:
+ *     summary: Generate new applicant license number
+ *     tags: [Applications]
+ *     description: Generate a new unique applicant license number by finding the highest existing license number and incrementing it. Starts at 100001 if no licenses exist.
+ *     responses:
+ *       200:
+ *         description: New license number generated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 new_application_number:
+ *                   type: string
+ *                   description: The newly generated license number
+ *                   example: "100002"
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/newNumber", async (req, res) => {
 
     // generate a new applicant license number by scanning

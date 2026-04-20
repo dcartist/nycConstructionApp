@@ -50,8 +50,25 @@ const licenseTypes = [
   "Welder"
 ]
 
-
-
+/**
+ * @swagger
+ * /api/v2/contractors:
+ *   get:
+ *     summary: Get all contractors
+ *     tags: [Contractors]
+ *     description: Retrieve all contractors from the database
+ *     responses:
+ *       200:
+ *         description: List of all contractors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/", async (req, res) => {
     try {
         const contractors = await Contractor.find();
@@ -106,7 +123,36 @@ router.put("/edit/:_id", async (req, res) => {
     }
 })
 
-
+/**
+ * @swagger
+ * /api/v2/contractors/shortlist:
+ *   get:
+ *     summary: Get contractors shortlist
+ *     tags: [Contractors]
+ *     description: Retrieve a condensed list of contractors with only essential fields (first_name, last_name, license_sl_no, license_type)
+ *     responses:
+ *       200:
+ *         description: Shortlist of contractors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   first_name:
+ *                     type: string
+ *                   last_name:
+ *                     type: string
+ *                   license_sl_no:
+ *                     type: string
+ *                   license_type:
+ *                     type: string
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/shortlist/", async (req, res) => {
     try {
         const contractors = await Contractor.find({}, { first_name: 1, last_name: 1, license_sl_no: 1, license_type: 1 });
@@ -115,9 +161,36 @@ router.get("/shortlist/", async (req, res) => {
         console.error("Error fetching shortlist:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-})  
+})
 
-
+/**
+ * @swagger
+ * /api/v2/contractors/page/{page}:
+ *   get:
+ *     summary: Get contractors with pagination
+ *     tags: [Contractors]
+ *     description: Retrieve contractors with pagination (30 items per page)
+ *     parameters:
+ *       - in: path
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number (starts at 1)
+ *     responses:
+ *       200:
+ *         description: Paginated list of contractors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/page/:page", async (req, res) => {
     try {
         let pageNumber = !req.params.page || isNaN(req.params.page) ? 1 : parseInt(req.params.page);
@@ -135,6 +208,50 @@ router.get("/page/:page", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/search/{inputedData}:
+ *   get:
+ *     summary: Search contractors
+ *     tags: [Contractors]
+ *     description: Search contractors by first name, last name, license number, company name, license type, or license status. Supports pagination.
+ *     parameters:
+ *       - in: path
+ *         name: inputedData
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term (searches across multiple fields)
+ *         example: "Smith"
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 30
+ *         description: Number of results per page
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // Generic search endpoint for contractors
 // Usage examples:
 //   GET /api/v2/contractors/search/Smith
@@ -173,6 +290,41 @@ router.get("/search/:inputedData", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/search/{searchTerm}/page/{page}:
+ *   get:
+ *     summary: Search contractors with pagination (legacy)
+ *     tags: [Contractors]
+ *     description: Legacy search endpoint. Search contractors by first name, last name, license number, or company name with pagination.
+ *     deprecated: true
+ *     parameters:
+ *       - in: path
+ *         name: searchTerm
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search term
+ *       - in: path
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number (starts at 1)
+ *     responses:
+ *       200:
+ *         description: Paginated search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 // Keep the old search route for backward compatibility
 router.get("/search/:searchTerm/page/:page", async (req, res) => {
     try {
@@ -200,6 +352,48 @@ router.get("/search/:searchTerm/page/:page", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/id/{_id}:
+ *   get:
+ *     summary: Get contractor by ID with jobs
+ *     tags: [Contractors]
+ *     description: Retrieve a specific contractor by their MongoDB ObjectID with associated jobs and property information
+ *     parameters:
+ *       - in: path
+ *         name: _id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Contractor MongoDB ObjectID
+ *     responses:
+ *       200:
+ *         description: Contractor details with jobs and property information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Contractor'
+ *                 - type: object
+ *                   properties:
+ *                     jobs:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           job_id:
+ *                             type: string
+ *                           job_number:
+ *                             type: string
+ *                           property:
+ *                             type: object
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/id/:_id", async (req, res) => {
     try {
         if (!req.params._id) {
@@ -248,6 +442,41 @@ router.get("/id/:_id", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/id/{_id}/full:
+ *   get:
+ *     summary: Get contractor with all associated jobs
+ *     tags: [Contractors]
+ *     description: Retrieve a contractor by ID with all jobs where this contractor is listed
+ *     parameters:
+ *       - in: path
+ *         name: _id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Contractor MongoDB ObjectID
+ *     responses:
+ *       200:
+ *         description: Contractor details with all associated jobs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Contractor'
+ *                 - type: object
+ *                   properties:
+ *                     jobs:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Job'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/id/:_id/full", async (req, res) => {
     try {
         if (!req.params._id) {
@@ -270,6 +499,33 @@ router.get("/id/:_id/full", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/license/number/{license_number}:
+ *   get:
+ *     summary: Get contractors by license number
+ *     tags: [Contractors]
+ *     description: Retrieve all contractors with a specific license number
+ *     parameters:
+ *       - in: path
+ *         name: license_number
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: License number
+ *         example: "100001"
+ *     responses:
+ *       200:
+ *         description: List of contractors matching the license number
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/license/number/:license_number", async (req, res) => {
     try {
         const contractors = await Contractor.find({ license_number: req.params.license_number });
@@ -280,6 +536,34 @@ router.get("/license/number/:license_number", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/license/status/{status}:
+ *   get:
+ *     summary: Get contractors by license status
+ *     tags: [Contractors]
+ *     description: Retrieve all contractors with a specific license status
+ *     parameters:
+ *       - in: path
+ *         name: status
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Active, Expired, Ready for Renewal, Surrendered, Failed to Renew, Revoked, Voided, Suspended, Out of Business, Close]
+ *         description: License status
+ *         example: "Active"
+ *     responses:
+ *       200:
+ *         description: List of contractors with the specified status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Contractor'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/license/status/:status", async (req, res) => {
     try {
         const contractors = await Contractor.find({ license_status: req.params.status });
@@ -290,15 +574,72 @@ router.get("/license/status/:status", async (req, res) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/license/status:
+ *   get:
+ *     summary: Get all license status values
+ *     tags: [Contractors]
+ *     description: Retrieve list of all valid license status values in uppercase
+ *     responses:
+ *       200:
+ *         description: List of license statuses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["ACTIVE", "EXPIRED", "READY FOR RENEWAL", "SURRENDERED", "FAILED TO RENEW", "REVOKED", "VOIDED", "SUSPENDED", "OUT OF BUSINESS", "CLOSE"]
+ */
 router.get("/license/status", async (req, res) => {
     res.json(license_status.map(status => status.toUpperCase()));
 })
 
+/**
+ * @swagger
+ * /api/v2/contractors/license/types:
+ *   get:
+ *     summary: Get all license type values
+ *     tags: [Contractors]
+ *     description: Retrieve list of all valid license types in uppercase
+ *     responses:
+ *       200:
+ *         description: List of license types
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["CONCRETE SAFETY MANAGER", "CONTRACTOR", "ELECTRICIAN", "PLUMBER"]
+ */
 router.get("/license/types", async (req, res) => {   
     res.json(licenseTypes.map(type => type.toUpperCase()));
 })
 
-
+/**
+ * @swagger
+ * /api/v2/contractors/newNumber:
+ *   get:
+ *     summary: Generate new contractor license number
+ *     tags: [Contractors]
+ *     description: Generate a new unique contractor license number by finding the highest existing license number and incrementing it. Starts at 100001 if no licenses exist.
+ *     responses:
+ *       200:
+ *         description: New license number generated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 new_contractor_number:
+ *                   type: string
+ *                   description: The newly generated license number
+ *                   example: "100002"
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
 router.get("/newNumber", async (req, res) => {
 
     // generate a new contractor license number by scanning
@@ -333,9 +674,6 @@ router.get("/newNumber", async (req, res) => {
 
 
 });
-
-
-
 
 //Adding Contractors into the database
 router.post("/add", async (req, res) => {
